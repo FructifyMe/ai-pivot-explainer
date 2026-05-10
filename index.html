@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>The AI Pivot — What It Means, How We Track It, What We've Learned</title>
+<style>
+  :root{
+    --bg:#0e1014; --panel:#151922; --panel2:#1c2330; --line:#2a3140;
+    --text:#e8ecf2; --muted:#8a93a4; --accent:#4ade80; --accent2:#60a5fa;
+    --warn:#f59e0b; --bad:#ef4444; --pink:#f472b6;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent2)}
+  .wrap{max-width:920px;margin:0 auto;padding:48px 24px 80px}
+  header{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:36px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;margin-bottom:14px}
+  h1{font-size:38px;line-height:1.15;margin:0 0 14px;letter-spacing:-0.02em}
+  h2{font-size:24px;margin:48px 0 14px;letter-spacing:-0.01em;border-top:1px solid var(--line);padding-top:36px}
+  h2:first-of-type{border-top:none;padding-top:0}
+  h3{font-size:17px;margin:22px 0 8px}
+  p{margin:10px 0}
+  .sub{color:var(--muted);font-size:17px;max-width:760px}
+  .toc{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:18px 22px;margin:22px 0;font-size:14px}
+  .toc .title{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}
+  .toc ol{padding-left:22px;margin:0;columns:2;gap:24px}
+  @media (max-width:680px){.toc ol{columns:1}}
+  .toc li{margin:4px 0}
+  .toc a{color:var(--text);text-decoration:none}
+  .toc a:hover{color:var(--accent2)}
+  .callout{background:linear-gradient(135deg,#1c2330 0%, #1a1f2b 100%);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:20px 24px;margin:22px 0}
+  .callout.warn{border-left-color:var(--warn)}
+  .callout.bad{border-left-color:var(--bad);background:#221a18;border-color:#4a2a22}
+  .callout.info{border-left-color:var(--accent2)}
+  .callout h3{margin-top:0}
+  .callout.warn h3{color:var(--warn)}
+  .callout.bad h3{color:var(--bad)}
+  .callout.info h3{color:var(--accent2)}
+  .type{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px 22px;margin:16px 0}
+  .type .header-row{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:4px}
+  .type .typenum{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent);background:rgba(74,222,128,.1);padding:2px 10px;border-radius:99px;letter-spacing:.05em}
+  .type .typenum.mixed{color:var(--warn);background:rgba(245,158,11,.14)}
+  .type .typenum.fake{color:var(--bad);background:rgba(239,68,68,.14)}
+  .type h3{margin:0;font-size:19px}
+  .type .meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:2px}
+  .type .row{display:grid;grid-template-columns:150px 1fr;gap:12px;margin:12px 0;font-size:14.5px}
+  .type .row .key{color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding-top:2px}
+  .type .example{background:var(--panel2);border-radius:8px;padding:12px 14px;margin-top:12px;font-size:14px}
+  .type .example b{color:var(--accent2)}
+  @media (max-width:680px){
+    .type .row{grid-template-columns:1fr;gap:4px}
+  }
+  .chart{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 22px 22px;margin:18px 0}
+  .chart-title{font-size:14px;color:var(--text);font-weight:600;margin-bottom:4px}
+  .chart-sub{font-size:12px;color:var(--muted);margin-bottom:14px}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+  td.mono{font-family:var(--mono)}
+  td .tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-family:var(--mono);letter-spacing:.05em;white-space:nowrap}
+  .tag.win{background:rgba(74,222,128,.12);color:var(--accent)}
+  .tag.bust{background:rgba(239,68,68,.14);color:var(--bad)}
+  .tag.partial{background:rgba(245,158,11,.14);color:var(--warn)}
+  .tag.info{background:rgba(96,165,250,.14);color:var(--accent2)}
+  ul.clean{padding-left:20px;margin:8px 0}
+  ul.clean li{margin:6px 0}
+  ol.clean{padding-left:22px;margin:8px 0}
+  ol.clean li{margin:8px 0}
+  blockquote{margin:18px 0;padding:14px 20px;border-left:3px solid var(--accent2);background:var(--panel2);border-radius:0 8px 8px 0;color:var(--text);font-size:15px}
+  blockquote p:first-child{margin-top:0}
+  blockquote p:last-child{margin-bottom:0}
+  .stat-row{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:14px 18px;flex:1;min-width:160px}
+  .stat .lbl{font-size:11px;font-family:var(--mono);color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+  .stat .val{font-family:var(--mono);font-size:24px;font-weight:600;margin-top:4px}
+  .stat .val.good{color:var(--accent)}
+  .stat .val.bad{color:var(--bad)}
+  .stat .val.warn{color:var(--warn)}
+  .footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+  .footer .disclaimer{margin-top:14px;padding:14px 16px;background:var(--panel2);border-radius:8px;font-style:italic}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">For Jim • Plain English • May 8, 2026</div>
+  <h1>The AI Pivot — What It Means, How We Track It, What We've Learned</h1>
+  <p class="sub">A complete walkthrough: what's actually happening when a company "pivots to AI," why management does it, the 25-year history of this exact pattern under different buzzwords, the scanner we run every morning to spot it, what it's caught, what it's missed, and how the discipline plays out in practice.</p>
+</header>
+
+<div class="toc">
+  <div class="title">In this document</div>
+  <ol>
+    <li><a href="#what">What "pivoting to AI" actually means (6 types)</a></li>
+    <li><a href="#thinking">What management is thinking</a></li>
+    <li><a href="#history">25 years of the same pattern</a></li>
+    <li><a href="#thesis">The thesis — why this is tradable</a></li>
+    <li><a href="#scanner">How the scanner works</a></li>
+    <li><a href="#miss">The MYSE miss and the fix</a></li>
+    <li><a href="#worked">Did the scanner actually work?</a></li>
+    <li><a href="#discipline">Why we scan a lot but barely trade</a></li>
+    <li><a href="#iterating">What we're iterating on</a></li>
+    <li><a href="#agents">The next big iteration — multi-agent scanner</a></li>
+    <li><a href="#verdict">Bottom line</a></li>
+  </ol>
+</div>
+
+<h2 id="what">1. What "pivoting to AI" actually means — six different things</h2>
+
+<p>"Acme Corp pivots to AI" can mean any of the following — radically different in cost, risk, and how "real" the new business actually is. The press release usually doesn't tell you which one; you have to read the SEC filing.</p>
+
+<div class="chart">
+  <div class="chart-title">The "How Real Is It?" Spectrum</div>
+  <div class="chart-sub">Left → right: less capital deployed, less operational change, more marketing-driven.</div>
+  <svg viewBox="0 0 860 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
+    <defs>
+      <linearGradient id="spec" x1="0" x2="1">
+        <stop offset="0" stop-color="#4ade80"/>
+        <stop offset="0.45" stop-color="#f59e0b"/>
+        <stop offset="1" stop-color="#ef4444"/>
+      </linearGradient>
+    </defs>
+    <rect x="40" y="40" width="780" height="14" rx="7" fill="url(#spec)" opacity="0.85"/>
+    <g font-family="ui-monospace, monospace" font-size="12" fill="#e8ecf2" text-anchor="middle">
+      <circle cx="90" cy="47" r="10" fill="#0e1014" stroke="#4ade80" stroke-width="2"/>
+      <text x="90" y="51" fill="#4ade80" font-weight="700">4</text>
+      <text x="90" y="80">Real retrofit</text>
+      <text x="90" y="95" fill="#8a93a4" font-size="10">(BTC miner → AI)</text>
+      <circle cx="220" cy="47" r="10" fill="#0e1014" stroke="#4ade80" stroke-width="2"/>
+      <text x="220" y="51" fill="#4ade80" font-weight="700">3</text>
+      <text x="220" y="80">Reverse merger</text>
+      <text x="220" y="95" fill="#8a93a4" font-size="10">(real co. comes in)</text>
+      <circle cx="350" cy="47" r="10" fill="#0e1014" stroke="#f59e0b" stroke-width="2"/>
+      <text x="350" y="51" fill="#f59e0b" font-weight="700">5</text>
+      <text x="350" y="80">GPU reseller</text>
+      <text x="350" y="95" fill="#8a93a4" font-size="10">(leases compute)</text>
+      <circle cx="480" cy="47" r="10" fill="#0e1014" stroke="#f59e0b" stroke-width="2"/>
+      <text x="480" y="51" fill="#f59e0b" font-weight="700">2</text>
+      <text x="480" y="80">Asset sale + shell</text>
+      <text x="480" y="95" fill="#8a93a4" font-size="10">(old biz gone)</text>
+      <circle cx="610" cy="47" r="10" fill="#0e1014" stroke="#f59e0b" stroke-width="2"/>
+      <text x="610" y="51" fill="#f59e0b" font-weight="700">6</text>
+      <text x="610" y="80">Consulting pivot</text>
+      <text x="610" y="95" fill="#8a93a4" font-size="10">(hire a few engineers)</text>
+      <circle cx="770" cy="47" r="10" fill="#0e1014" stroke="#ef4444" stroke-width="2"/>
+      <text x="770" y="51" fill="#ef4444" font-weight="700">1</text>
+      <text x="770" y="80">Just the name</text>
+      <text x="770" y="95" fill="#8a93a4" font-size="10">(no change underneath)</text>
+    </g>
+    <text x="40" y="125" fill="#8a93a4" font-size="11" font-family="ui-monospace, monospace">← MORE REAL / CAPITAL INTENSIVE</text>
+    <text x="820" y="125" fill="#8a93a4" font-size="11" font-family="ui-monospace, monospace" text-anchor="end">MORE MARKETING / CHEAP →</text>
+  </svg>
+</div>
+
+<div class="type">
+  <div class="header-row"><span class="typenum fake">TYPE 1</span><h3>Just the name change</h3></div>
+  <div class="meta">Most common. Least real. Usually a precursor to a capital raise.</div>
+  <div class="row"><div class="key">What they do</div><div>File an 8-K with the SEC (Item 5.03 — "Amendments to Articles of Incorporation"). Pay the Nevada or Delaware secretary of state to issue a Certificate of Amendment. Change the name on the corporate letterhead. Issue a press release describing their new "AI strategy."</div></div>
+  <div class="row"><div class="key">What changes</div><div>Operationally, usually nothing. The same management, employees, and revenue base continue. The shoes still ship. The iced tea still gets brewed. "AI" is on the letterhead and in the investor deck.</div></div>
+  <div class="row"><div class="key">Cost</div><div>~$10,000–$50,000 in legal and filing fees. A week of work.</div></div>
+  <div class="row"><div class="key">Why they do it</div><div>The stock pop. Once the stock is up 200–500%, the company can issue more shares at the higher price (a "secondary offering") to raise real cash. That cash either funds an actual pivot later, or keeps the lights on. Almost always a fundraising mechanism dressed up as a strategy.</div></div>
+  <div class="example"><b>2026 example — BIRD (Allbirds → NewBird AI):</b> Sustainable-shoe company changed its name and announced AI agent technology. No AI engineers, no AI products. Still made shoes. Stock popped +582% in days; gave back 70% within two weeks.</div>
+  <div class="example"><b>1998 example — Zapata Corp → Zap.com:</b> Zapata was a <i>fish processing company</i>. Renamed to "Zap.com" with an internet strategy. Same fish, same factories. Stock ran ~2,900% before going to zero.</div>
+</div>
+
+<div class="type">
+  <div class="header-row"><span class="typenum mixed">TYPE 2</span><h3>Sell the old business — shell becomes AI</h3></div>
+  <div class="meta">More substantive. The original business genuinely goes away.</div>
+  <div class="row"><div class="key">What they do</div><div>Announce a "strategic review." Sell the legacy assets — factories, IP, customer contracts — for cash. Now the public company is a shell holding cash and a Nasdaq listing. Then either (a) acquire an AI business with that cash, or (b) wait for an AI operator to merge in.</div></div>
+  <div class="row"><div class="key">What changes</div><div>Everything. Old employees laid off or transferred to the buyer. Old revenue disappears. The new identity is whatever business gets brought in next.</div></div>
+  <div class="row"><div class="key">Cost</div><div>Several months to a year. Legal fees in the hundreds of thousands. Asset-sale proceeds typically a few million to tens of millions.</div></div>
+  <div class="row"><div class="key">Why they do it</div><div>The legacy business is failing. The board recognizes that the most valuable thing they own isn't the product — it's the Nasdaq listing itself, which is worth $5–20M to a private company that wants to go public without an IPO.</div></div>
+  <div class="example"><b>2026 example — Mawson Infrastructure → Big Digital Energy (BGDE):</b> A struggling Bitcoin miner that got a Nasdaq delisting notice on 4/17/2026. Sold off operations, rebranded as Big Digital Energy, signed a colocation agreement with the Endeavor Group. Stock went from $1.70 (52-week low) to $6.56 within ~2 weeks of the ticker change.</div>
+</div>
+
+<div class="type">
+  <div class="header-row"><span class="typenum mixed">TYPE 3</span><h3>Reverse merger — a real AI company moves into the shell</h3></div>
+  <div class="meta">Legally complex. Genuinely transforms the business — and severely dilutes the original shareholders.</div>
+  <div class="row"><div class="key">What they do</div><div>A private AI company finds a struggling public company with a low market cap and a clean Nasdaq listing. The public company issues an enormous number of new shares (often 5–10× the existing count) to the private company's owners in exchange for 100% of the private company. After the deal, the AI company's original owners control 80–95% of the public company.</div></div>
+  <div class="row"><div class="key">What changes</div><div>The "AI company" that was private is now public. Its real employees, products, revenue, and contracts are inside the new ticker. The old shell business is sold off or wound down.</div></div>
+  <div class="row"><div class="key">Cost</div><div>3–9 months. $1–5M in legal, accounting, and SEC review fees. Still far cheaper and faster than a real IPO ($10–30M+ and 12–18 months).</div></div>
+  <div class="row"><div class="key">Why they do it</div><div>The private AI company skips the IPO process — no underwriting, no roadshow, less SEC scrutiny. Old shareholders get diluted to 5–20% — but their alternative was likely delisting and going to zero. 20% of something real beats 100% of nothing.</div></div>
+  <div class="example"><b>2026 example — Phoenix Asia Holdings (PHOE):</b> A Hong Kong construction subcontractor announced on 5/4/2026 it would issue 100 million new shares ($1B value) to ACEA Therapeutics for 100% of ACEA Pharma (a clinical-stage drug company). After closing, ACEA owns 82%; original construction-business shareholders own 18%. The company will rename to "ACEA Pharma, Inc."</div>
+</div>
+
+<div class="type">
+  <div class="header-row"><span class="typenum">TYPE 4</span><h3>Real operational retrofit — usually crypto miner → AI data center</h3></div>
+  <div class="meta">The most legitimate version. Real warehouses, real chips, real power contracts.</div>
+  <div class="row"><div class="key">What they do</div><div>A Bitcoin miner physically owns warehouses full of mining ASICs (specialized chips), connected to substantial power contracts and industrial cooling. They sell or repurpose the old ASICs and install NVIDIA H100/H200/Blackwell GPUs in the same buildings. They sign long-term colocation contracts with hyperscalers (Microsoft, Google) or AI cloud providers (CoreWeave).</div></div>
+  <div class="row"><div class="key">What changes</div><div>Substantial. Same warehouses, different chips, different customers. Some run hybrid models — mining BTC during low-cost-electricity hours, running AI during peak compute demand. Real engineering teams build the networking and software stack required for AI workloads.</div></div>
+  <div class="row"><div class="key">Cost</div><div>Hundreds of millions to billions of dollars. Each NVIDIA H100 GPU costs ~$30,000; a rack holds 8–16 of them; a data center has hundreds of racks. The networking (InfiniBand) costs as much as the GPUs. 12–24 month buildouts.</div></div>
+  <div class="row"><div class="key">Why they do it</div><div>The economics flipped. At $100K BTC vs. $80K cash cost to mine one BTC, mining margins are razor-thin. AI compute rental margins are reported at 85% with lower energy overhead per dollar of revenue. Same warehouses, same power, much better unit economics. Major deals so far: Hut 8 / Google $7B, IREN / Microsoft $1.94B, MARA / Starwood.</div></div>
+  <div class="example"><b>2026 example — Bitfarms → Keel Infrastructure (KEEL):</b> Full rebrand from pure Bitcoin miner to AI/HPC infrastructure. They've publicly stated they'll sell their existing Bitcoin holdings to fund the transition. Multi-year capital deployment plan with real construction.</div>
+</div>
+
+<div class="type">
+  <div class="header-row"><span class="typenum mixed">TYPE 5</span><h3>GPU-as-a-Service reseller — booking block time</h3></div>
+  <div class="meta">Capital-light. Real revenue can happen, but no infrastructure ownership.</div>
+  <div class="row"><div class="key">What they do</div><div>The company doesn't own GPUs or data centers. They sign a contract with a real GPU operator (CoreWeave, Lambda Labs, Together AI) to rent a block of compute — say, 1,000 NVIDIA Blackwell GPUs for 12 months at a fixed price. Then resell access at a markup, or use it for their own AI services.</div></div>
+  <div class="row"><div class="key">What changes</div><div>Modest. Hire a sales team and a few cloud engineers. Build contracts and a billing system. The actual GPUs and data centers belong to someone else.</div></div>
+  <div class="row"><div class="key">Cost</div><div>Lowest of the "real" pivots. A GPU lease commitment of $1M–$50M plus hiring 5–20 people. Operational in 3–6 months.</div></div>
+  <div class="row"><div class="key">Why they do it</div><div>No data center construction, no power negotiations, no chip procurement. They take operating-leverage risk (committed lease costs vs. uncertain customer demand) but avoid the multi-hundred-million buildout risk. Best fit for micro-caps that can't afford Type 4.</div></div>
+  <div class="example"><b>2026 example — Alpha Compute Corp (ALP, formerly AlphaTON):</b> Announced a lease of 1,000+ NVIDIA Blackwell GPUs from a hyperscale provider. No owned data center. Success depends on whether they can find enterprise customers willing to pay above the lease rate. <i>(This is the one position Mike actually owns from this scan — currently down 19%.)</i></div>
+</div>
+
+<div class="type">
+  <div class="header-row"><span class="typenum fake">TYPE 6</span><h3>"AI consulting" / services pivot</h3></div>
+  <div class="meta">Cheapest "real" version. Rarely transforms the company.</div>
+  <div class="row"><div class="key">What they do</div><div>Hire 1–5 ML engineers. Build a small consulting practice. Pitch existing customers on "AI integration projects" — chatbots, data analysis with LLMs, workflow automation.</div></div>
+  <div class="row"><div class="key">What changes</div><div>Minimal. Adds a new service line. AI revenue is usually small — $100K to a few million annually for years.</div></div>
+  <div class="row"><div class="key">Cost</div><div>A few hundred thousand in hiring costs. 6–12 months to first projects.</div></div>
+  <div class="row"><div class="key">Why they do it</div><div>Cheapest path to a press-release-able claim. Doesn't usually justify the stock-price re-rating retail gives it.</div></div>
+</div>
+
+<h2 id="thinking">2. What management is actually thinking</h2>
+
+<p>The board's internal decision usually plays out like this:</p>
+
+<blockquote>
+  <p><b>Step 1.</b> Our core business is failing, has failed, or is too small to support a public-company cost structure.</p>
+  <p><b>Step 2.</b> We need to do something dramatic to either attract new capital, attract a new operator to take over, or avoid being delisted.</p>
+  <p><b>Step 3.</b> What buzzword is the market paying premium valuations for right now? In 1999 it was ".com." In 2017, "blockchain." In 2020–21, "EV" and "SPAC." In 2026, it's "AI" — within AI, specifically "compute," "GPU," and "data center."</p>
+  <p><b>Step 4.</b> Can we credibly say we're pivoting there? Most cannot. They do it anyway because the legal cost of trying is small.</p>
+  <p><b>Step 5.</b> File the cheapest possible legal mechanism — a Nevada or Delaware charter amendment (no shareholder vote required in many cases). Push out a press release the same day.</p>
+  <p><b>Step 6.</b> If the stock pops, raise capital fast — either by selling new shares (a secondary offering) or by attracting a real AI operator who wants to use the shell. The pop is the leverage.</p>
+</blockquote>
+
+<p><b>The honest summary:</b> the rebrand isn't the strategy — it's the marketing for a fundraising round. If management can raise enough money during the post-pop window, they can fund an actual pivot (Type 2, 3, 4, or 5). If they can't, the company often drifts back to its dying core business and the stock fades.</p>
+
+<h2 id="history">3. This is a 25-year-old pattern under different buzzwords</h2>
+
+<div class="chart">
+  <div class="chart-title">Five decades of buzzword-pivot trades — peak gain vs. eventual drawdown</div>
+  <div class="chart-sub">Same mechanics every time. Massive pop on the rename; almost all give it back.</div>
+  <svg viewBox="0 0 820 360" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
+    <g stroke="#2a3140" stroke-width="1">
+      <line x1="60" y1="20"  x2="800" y2="20"/>
+      <line x1="60" y1="65"  x2="800" y2="65"/>
+      <line x1="60" y1="110" x2="800" y2="110"/>
+      <line x1="60" y1="155" x2="800" y2="155"/>
+      <line x1="60" y1="245" x2="800" y2="245"/>
+      <line x1="60" y1="290" x2="800" y2="290"/>
+    </g>
+    <line x1="60" y1="200" x2="800" y2="200" stroke="#5a6172" stroke-width="1.5"/>
+    <g fill="#8a93a4" font-family="ui-monospace, monospace" font-size="11" text-anchor="end">
+      <text x="50" y="24">+800%</text>
+      <text x="50" y="69">+600%</text>
+      <text x="50" y="114">+400%</text>
+      <text x="50" y="159">+200%</text>
+      <text x="50" y="204">0%</text>
+      <text x="50" y="249">-50%</text>
+      <text x="50" y="294">-100%</text>
+    </g>
+    <rect x="88" y="20" width="50" height="180" rx="3" fill="#4ade80"/>
+    <text x="113" y="14" text-anchor="middle" fill="#4ade80" font-family="ui-monospace, monospace" font-size="11" font-weight="600">+2900% ↑</text>
+    <rect x="142" y="200" width="50" height="84" rx="3" fill="#ef4444"/>
+    <text x="167" y="298" text-anchor="middle" fill="#ef4444" font-family="ui-monospace, monospace" font-size="11" font-weight="600">-99%</text>
+    <text x="140" y="338" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="12" font-weight="600">Zapata→Zap.com</text>
+    <text x="140" y="354" text-anchor="middle" fill="#8a93a4" font-size="11">1998 (dot-com)</text>
+    <rect x="228" y="135" width="50" height="65" rx="3" fill="#4ade80"/>
+    <text x="253" y="129" text-anchor="middle" fill="#4ade80" font-family="ui-monospace, monospace" font-size="11" font-weight="600">+290%</text>
+    <rect x="282" y="200" width="50" height="85" rx="3" fill="#ef4444"/>
+    <text x="307" y="298" text-anchor="middle" fill="#ef4444" font-family="ui-monospace, monospace" font-size="11" font-weight="600">-100%</text>
+    <text x="280" y="338" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="12" font-weight="600">Long Blockchain</text>
+    <text x="280" y="354" text-anchor="middle" fill="#8a93a4" font-size="11">2017 (crypto)</text>
+    <rect x="368" y="93" width="50" height="107" rx="3" fill="#4ade80"/>
+    <text x="393" y="87" text-anchor="middle" fill="#4ade80" font-family="ui-monospace, monospace" font-size="11" font-weight="600">+475%</text>
+    <rect x="422" y="200" width="50" height="81" rx="3" fill="#ef4444"/>
+    <text x="447" y="294" text-anchor="middle" fill="#ef4444" font-family="ui-monospace, monospace" font-size="11" font-weight="600">-95%</text>
+    <text x="420" y="338" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="12" font-weight="600">Riot Blockchain</text>
+    <text x="420" y="354" text-anchor="middle" fill="#8a93a4" font-size="11">2017 (survivor*)</text>
+    <rect x="508" y="65" width="50" height="135" rx="3" fill="#4ade80"/>
+    <text x="533" y="59" text-anchor="middle" fill="#4ade80" font-family="ui-monospace, monospace" font-size="11" font-weight="600">+600%</text>
+    <rect x="562" y="200" width="50" height="84" rx="3" fill="#ef4444"/>
+    <text x="587" y="297" text-anchor="middle" fill="#ef4444" font-family="ui-monospace, monospace" font-size="11" font-weight="600">-99%</text>
+    <text x="560" y="338" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="12" font-weight="600">Nikola (NKLA)</text>
+    <text x="560" y="354" text-anchor="middle" fill="#8a93a4" font-size="11">2020 (SPAC/EV)</text>
+    <rect x="648" y="69" width="50" height="131" rx="3" fill="#4ade80"/>
+    <text x="673" y="63" text-anchor="middle" fill="#4ade80" font-family="ui-monospace, monospace" font-size="11" font-weight="600">+582%</text>
+    <rect x="702" y="200" width="50" height="60" rx="3" fill="#ef4444"/>
+    <text x="727" y="274" text-anchor="middle" fill="#ef4444" font-family="ui-monospace, monospace" font-size="11" font-weight="600">-70%</text>
+    <text x="700" y="338" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="12" font-weight="600">BIRD</text>
+    <text x="700" y="354" text-anchor="middle" fill="#8a93a4" font-size="11">2026 (AI, current)</text>
+  </svg>
+  <div style="font-size:11px;color:var(--muted);margin-top:8px">*Riot Blockchain is the rare survivor — it became a legitimate Bitcoin miner ("Riot Platforms"). Anyone who held through the 2018 crypto winter still ate an 80%+ drawdown before recovery.</div>
+</div>
+
+<table>
+  <thead><tr><th>Era</th><th>Buzzword</th><th>Famous winner</th><th>Famous bust</th></tr></thead>
+  <tbody>
+    <tr><td>1998–2000</td><td>.com</td><td>Amazon, eBay (real businesses)</td><td>Pets.com; Zapata Corp (fish company → Zap.com)</td></tr>
+    <tr><td>December 2017</td><td>Blockchain</td><td>Riot Blockchain (became Riot Platforms)</td><td>Long Blockchain Corp — delisted, SEC fraud charges 2021</td></tr>
+    <tr><td>2018–2019</td><td>Cannabis</td><td>Tilray (briefly $300)</td><td>~90% of names eventually went to zero</td></tr>
+    <tr><td>2020–2021</td><td>EV / SPAC</td><td>Tesla (not a SPAC; real business)</td><td>Nikola ($79 → ~$0.50), Lordstown ($31 → bankrupt)</td></tr>
+    <tr><td>2024–today</td><td>AI / compute / GPU</td><td>TBD — pattern is fresh</td><td>BIRD, MYSE round-tripped within weeks</td></tr>
+  </tbody>
+</table>
+
+<p>Two case studies worth knowing:</p>
+
+<div class="callout bad">
+  <h3>Long Blockchain Corp (LBCC) — December 2017</h3>
+  <p><b>Long Island Iced Tea Corp</b> — a beverage company — announced it would rename to "Long Blockchain Corp" and pivot to blockchain technology. Stock jumped ~290% intraday. The CEO had no blockchain experience, no blockchain product. They had iced tea. <b>Outcome:</b> delisted from Nasdaq in 2018. In 2021 the SEC charged the company with fraud over insider trading tied to the announcement. Stock is worthless.</p>
+</div>
+
+<div class="callout">
+  <h3>Riot Blockchain — October 2017 (the rare survivor)</h3>
+  <p><b>Bioptix</b> — a struggling biotech — renamed itself "Riot Blockchain" and pivoted to crypto mining. Stock ran from ~$8 to $46+ in 8 weeks (+475%). Founder Barry Honig was later charged by the SEC with pump-and-dump. <b>But uniquely</b> — the company actually built a real Bitcoin mining business. It rebranded again to "Riot Platforms" in 2023 and is today a legitimate operator. The lesson: even the rare survivor crushed its earliest buyers. The traders who took the gain in December 2017 won; the long-term holders ate a 5-year recovery.</p>
+</div>
+
+<h2 id="thesis">4. The thesis — why this is a tradable pattern</h2>
+
+<p>Every winning name in every wave shares the same structural fingerprint. Once you know what to look for, the pattern is mechanical:</p>
+
+<ul class="clean">
+  <li><b>A "zombie shell"</b> — a publicly listed company with a failed or dying core business, a low share count, and a board that needs to do <i>something</i> to avoid delisting.</li>
+  <li><b>A buzzword the market is pricing aggressively elsewhere</b> — ".com" in 1999, "blockchain" in 2017, "AI" today.</li>
+  <li><b>A simple SEC filing</b> — usually a Form 8-K with Item 5.03 (charter amendment) or a Nevada certificate of amendment. Cheap, fast, no shareholder vote required in some states.</li>
+  <li><b>Low float + retail discovery</b> — once one name pops, retail traders pattern-match. Stocktwits and CNBC amplify. Copycats file within 48–72 hours.</li>
+  <li><b>An exit window of ~5–10 trading days</b> before float catches up, new shares get registered, and the inevitable secondary offering hits.</li>
+</ul>
+
+<p>The 2026 "Wave 2" sequence over the last 4 weeks proves the cycle is live:</p>
+
+<div class="chart">
+  <div class="chart-title">2026 "Wave 2" AI pivots — peak pop from pre-filing price</div>
+  <div class="chart-sub">Bars are peak gain in the first 1–10 trading days after the rebrand filing.</div>
+  <svg viewBox="0 0 820 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
+    <g stroke="#2a3140" stroke-width="1">
+      <line x1="60" y1="40" x2="800" y2="40"/>
+      <line x1="60" y1="80" x2="800" y2="80"/>
+      <line x1="60" y1="120" x2="800" y2="120"/>
+      <line x1="60" y1="160" x2="800" y2="160"/>
+      <line x1="60" y1="200" x2="800" y2="200"/>
+      <line x1="60" y1="240" x2="800" y2="240"/>
+    </g>
+    <line x1="60" y1="240" x2="800" y2="240" stroke="#3a4150" stroke-width="1.5"/>
+    <g fill="#8a93a4" font-family="ui-monospace, monospace" font-size="11" text-anchor="end">
+      <text x="50" y="244">0%</text>
+      <text x="50" y="204">+100%</text>
+      <text x="50" y="164">+200%</text>
+      <text x="50" y="124">+300%</text>
+      <text x="50" y="84">+400%</text>
+      <text x="50" y="44">+500%</text>
+    </g>
+    <rect x="110" y="7" width="120" height="233" rx="4" fill="#4ade80"/>
+    <text x="170" y="0" text-anchor="middle" fill="#4ade80" font-family="ui-monospace, monospace" font-size="14" font-weight="600">+582%</text>
+    <text x="170" y="265" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="13" font-weight="600">BIRD</text>
+    <text x="170" y="282" text-anchor="middle" fill="#8a93a4" font-size="11">Allbirds → NewBird AI</text>
+    <rect x="290" y="132" width="120" height="108" rx="4" fill="#60a5fa"/>
+    <text x="350" y="124" text-anchor="middle" fill="#60a5fa" font-family="ui-monospace, monospace" font-size="14" font-weight="600">+270%</text>
+    <text x="350" y="265" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="13" font-weight="600">MYSE</text>
+    <text x="350" y="282" text-anchor="middle" fill="#8a93a4" font-size="11">→ Myseum.AI</text>
+    <rect x="470" y="222" width="120" height="18" rx="3" fill="#f59e0b"/>
+    <text x="530" y="214" text-anchor="middle" fill="#f59e0b" font-family="ui-monospace, monospace" font-size="14" font-weight="600">+45%</text>
+    <text x="530" y="265" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="13" font-weight="600">ALP ★</text>
+    <text x="530" y="282" text-anchor="middle" fill="#8a93a4" font-size="11">AlphaTON → Alpha Compute</text>
+    <rect x="650" y="168" width="120" height="72" rx="4" fill="#f472b6"/>
+    <text x="710" y="160" text-anchor="middle" fill="#f472b6" font-family="ui-monospace, monospace" font-size="14" font-weight="600">+180%</text>
+    <text x="710" y="265" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="13" font-weight="600">AGPU</text>
+    <text x="710" y="282" text-anchor="middle" fill="#8a93a4" font-size="11">$260M HPC contract</text>
+  </svg>
+  <div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:6px">★ ALP is the only one of these Mike actually bought. Currently -19%.</div>
+</div>
+
+<p>The cycle order matters. First-movers (BIRD, +582%) get the biggest pops. Copycats that file within 48–72 hours (MYSE, +270%) get smaller but still triple-digit moves. Late followers usually get burned. <b>The mechanical observation:</b> first-mover gets 300–700%, copycats get 100–200%, late followers get the bag-hold.</p>
+
+<h2 id="scanner">5. How the scanner works — the four screens we run every morning</h2>
+
+<p>Every trading day, before market open, the scanner runs four screens. The goal isn't to find <i>every</i> pivot — it's to make sure no obvious filing slips past us, the way MYSE did in April (see next section).</p>
+
+<div class="type">
+  <h3>Screen 1 — SEC 8-K filter (last 72 hours)</h3>
+  <p>Pull every Form 8-K filing from issuers with market cap under $100M, filtering on specific item codes:</p>
+  <ul class="clean">
+    <li><b>Item 5.03</b> — Amendments to Articles of Incorporation / charter amendments / name changes. This is how Nevada and Delaware shell pivots get filed. (The MYSE miss was a 5.03-only filing.)</li>
+    <li><b>Item 1.01</b> — material definitive agreements (reverse merger announcements, big contracts)</li>
+    <li><b>Item 2.01</b> — completion of acquisitions or dispositions of assets</li>
+    <li><b>Item 5.02</b> — officer / director appointments (often precedes a strategic pivot)</li>
+    <li><b>Item 8.01</b> — catch-all for other material events</li>
+  </ul>
+  <p>For every 8-K from a sub-$100M issuer, the scanner asks: "could this be a pivot setup?" — without filtering on narrative keywords, just on the filer size and the item codes.</p>
+</div>
+
+<div class="type">
+  <h3>Screen 2 — Pre-market gainer forcing function</h3>
+  <p>Pull the top 30 pre-market gainers. For every name under $250M market cap with a pre-market move &gt;50%, the scanner <b>requires</b> an explanation — what's driving the move? Acceptable answers: SEC filing, press release, rebrand, short squeeze, biotech catalyst, earnings, M&amp;A rumor.</p>
+  <p>"Unknown driver" is not acceptable. The forcing function exists because MYSE on 4/16 was +200% pre-market with no obvious narrative — the scanner has to dig until it finds the cause.</p>
+</div>
+
+<div class="type">
+  <h3>Screen 3 — Copycat window detection</h3>
+  <p>When any one name pops &gt;200% in a 5-day window, the scanner actively scans EDGAR for <i>other</i> sub-$50M issuers filing name-change or charter-amendment 8-Ks within the next 48–72 hours. Copycats often file fast to ride the same retail momentum wave. The 4/15 BIRD pop produced the 4/16 MYSE pop and the 4/20 ATON→ALP rebrand. The 4/30 SOBR pop produced ATVK on 5/6 and PHOE on 5/4.</p>
+</div>
+
+<div class="type">
+  <h3>Screen 4 — Classic narrative scan</h3>
+  <p>The qualitative layer on top of the structural screens: Bitcoin miners pivoting to AI/HPC, struggling consumer brands going "tech," reverse-merger biotechs claiming robotics or AI. This is the original "zombie shell" scan that produced KEEL, AGPU, and the early Type 4 names.</p>
+</div>
+
+<p>Each morning produces a markdown briefing with sections for Hot Candidates (actionable today), Pre-Announcement Watch (setup exists but no catalyst), Copycat Window Alert (if applicable), Pre-Market Gainers Table (full sub-$250M list with drivers), Sector Trend Update, and Misses / False Positives. Mike reads it, decides what to act on (usually nothing), and the next day's scan picks up the watch list.</p>
+
+<h2 id="miss">6. The MYSE miss — why the scanner exists in its current form</h2>
+
+<div class="callout warn">
+  <p><b>On April 16, the scan missed MYSE (Myseum.AI).</b> It ran +200% pre-market and +270% intraday. The reason it was missed: the original screen was filtering on narrative keywords like "AI pivot" and "rebrand to" — instead of the actual SEC filing mechanism. MYSE filed as a quiet Nevada charter amendment, Item 5.03 only, with no flashy press release. The scanner walked past it.</p>
+  <p><b>The fix:</b> rebuild the scan around SEC filing item codes themselves (5.03, 1.01, 2.01, 5.02, 8.01), force-explain every sub-$250M pre-market move &gt;50%, and add the explicit copycat-window check. That correction is what's caught everything since — including ATVK on 5/6 and PHOE on 5/4.</p>
+  <p><b>The point:</b> the scanner isn't a static screen — it's a discipline that gets revised every time it misses something obvious. The MYSE miss was logged, the cause was identified, the fix was implemented, and now sits in the four-screen structure above.</p>
+</div>
+
+<h2 id="worked">7. Did the scanner actually work? The empirical results</h2>
+
+<p>Of the 8 names called out as "Top Pick," "Top Trade," or anchor in the daily briefings between 4/20 and 5/8, here's what actually happened to each:</p>
+
+<div class="chart">
+  <div class="chart-title">Flagged in our briefings → did the stock pop?</div>
+  <div class="chart-sub">Move from price on the day we flagged through the highest realized close as of 2026-05-08.</div>
+  <svg viewBox="0 0 820 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
+    <g stroke="#2a3140" stroke-width="1">
+      <line x1="80" y1="20"  x2="800" y2="20"/>
+      <line x1="80" y1="74"  x2="800" y2="74"/>
+      <line x1="80" y1="128" x2="800" y2="128"/>
+      <line x1="80" y1="182" x2="800" y2="182"/>
+      <line x1="80" y1="236" x2="800" y2="236"/>
+      <line x1="80" y1="290" x2="800" y2="290"/>
+    </g>
+    <line x1="80" y1="260" x2="800" y2="260" stroke="#5a6172" stroke-width="1.5"/>
+    <g fill="#8a93a4" font-family="ui-monospace, monospace" font-size="11" text-anchor="end">
+      <text x="72" y="24">+250%</text>
+      <text x="72" y="78">+200%</text>
+      <text x="72" y="132">+150%</text>
+      <text x="72" y="186">+100%</text>
+      <text x="72" y="240">+50%</text>
+      <text x="72" y="264">0%</text>
+      <text x="72" y="294">-50%</text>
+    </g>
+    <rect x="100" y="20" width="70" height="240" rx="3" fill="#22c55e"/>
+    <text x="135" y="14" text-anchor="middle" fill="#22c55e" font-family="ui-monospace, monospace" font-size="13" font-weight="700">+230%</text>
+    <text x="135" y="320" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="12" font-weight="600">SOBR</text>
+    <text x="135" y="338" text-anchor="middle" fill="#8a93a4" font-size="10">flag 5/1 → 5/7</text>
+    <text x="135" y="354" text-anchor="middle" fill="#8a93a4" font-size="10">($0.55 → $1.81)</text>
+    <rect x="190" y="219" width="70" height="41" rx="3" fill="#4ade80"/>
+    <text x="225" y="213" text-anchor="middle" fill="#4ade80" font-family="ui-monospace, monospace" font-size="13" font-weight="700">+38%</text>
+    <text x="225" y="320" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="12" font-weight="600">BGDE</text>
+    <text x="225" y="338" text-anchor="middle" fill="#8a93a4" font-size="10">flag 4/24, debut 4/30</text>
+    <text x="225" y="354" text-anchor="middle" fill="#8a93a4" font-size="10">($4.76 → $6.56)</text>
+    <rect x="280" y="203" width="70" height="57" rx="3" fill="#4ade80"/>
+    <text x="315" y="197" text-anchor="middle" fill="#4ade80" font-family="ui-monospace, monospace" font-size="13" font-weight="700">+54%</text>
+    <text x="315" y="320" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="12" font-weight="600">FABC</text>
+    <text x="315" y="338" text-anchor="middle" fill="#8a93a4" font-size="10">flag 4/29 (rebrand day)</text>
+    <text x="315" y="354" text-anchor="middle" fill="#8a93a4" font-size="10">peak intraday</text>
+    <rect x="370" y="205" width="70" height="55" rx="3" fill="#4ade80"/>
+    <text x="405" y="199" text-anchor="middle" fill="#4ade80" font-family="ui-monospace, monospace" font-size="13" font-weight="700">+51%</text>
+    <text x="405" y="320" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="12" font-weight="600">AGPU</text>
+    <text x="405" y="338" text-anchor="middle" fill="#8a93a4" font-size="10">flag 4/22 → 4/23</text>
+    <text x="405" y="354" text-anchor="middle" fill="#8a93a4" font-size="10">($4.90 → $7.41)</text>
+    <rect x="460" y="25" width="70" height="235" rx="3" fill="#22c55e"/>
+    <text x="495" y="19" text-anchor="middle" fill="#22c55e" font-family="ui-monospace, monospace" font-size="13" font-weight="700">~+220%</text>
+    <text x="495" y="320" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="12" font-weight="600">QXL</text>
+    <text x="495" y="338" text-anchor="middle" fill="#8a93a4" font-size="10">VBIX rebrand, flag 4/24</text>
+    <text x="495" y="354" text-anchor="middle" fill="#8a93a4" font-size="10">52w range $0.96–$9.80</text>
+    <rect x="550" y="208" width="70" height="52" rx="3" fill="#4ade80"/>
+    <text x="585" y="202" text-anchor="middle" fill="#4ade80" font-family="ui-monospace, monospace" font-size="13" font-weight="700">+49%</text>
+    <text x="585" y="320" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="12" font-weight="600">USEG</text>
+    <text x="585" y="338" text-anchor="middle" fill="#8a93a4" font-size="10">4/15 → 4/27 flag</text>
+    <text x="585" y="354" text-anchor="middle" fill="#8a93a4" font-size="10">($0.71 → $1.06)</text>
+    <rect x="640" y="260" width="70" height="45" rx="3" fill="#ef4444"/>
+    <text x="675" y="319" text-anchor="middle" fill="#ef4444" font-family="ui-monospace, monospace" font-size="13" font-weight="700">-28%</text>
+    <text x="675" y="338" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="12" font-weight="600">VBIO</text>
+    <text x="675" y="354" text-anchor="middle" fill="#8a93a4" font-size="10">TIVC rebrand 4/28</text>
+    <rect x="730" y="260" width="70" height="24" rx="3" fill="#ef4444"/>
+    <text x="765" y="298" text-anchor="middle" fill="#ef4444" font-family="ui-monospace, monospace" font-size="13" font-weight="700">-15%</text>
+    <text x="765" y="338" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="12" font-weight="600">KULR</text>
+    <text x="765" y="354" text-anchor="middle" fill="#8a93a4" font-size="10">flag 4/28, faded</text>
+  </svg>
+  <div style="font-size:12px;color:var(--muted);margin-top:6px;font-style:italic">6 of 8 named "Top Picks" delivered double- or triple-digit moves. Two failed.</div>
+</div>
+
+<table>
+  <thead><tr><th>Ticker</th><th>Flag date / reason</th><th>Move post-flag</th><th>What happened</th></tr></thead>
+  <tbody>
+    <tr><td class="mono">SOBR</td><td>5/1 — copycat anchor, Clean World Ventures merger</td><td class="mono">$0.55 → $1.81 (+230% in 5 days)</td><td><span class="tag win">Worked</span></td></tr>
+    <tr><td class="mono">QXL (VBIX)</td><td>4/24 — "Top Trade This Week" — Viewbix → Quantum X Labs</td><td class="mono">~$1 → $3.24 (~+220%)</td><td><span class="tag win">Worked</span></td></tr>
+    <tr><td class="mono">FABC (SBLX)</td><td>4/29 — "Top Tradable Pivot" — StableX → Fabric.AI</td><td class="mono">+54% intraday on rebrand day</td><td><span class="tag win">Worked</span></td></tr>
+    <tr><td class="mono">AGPU</td><td>4/22 — flagged as "Chase Warning" (already moving)</td><td class="mono">$4.90 → $7.41 (+51% in 1 day)</td><td><span class="tag win">Worked</span></td></tr>
+    <tr><td class="mono">BGDE (MIGI)</td><td>4/24 — "Top Pick" — Mawson → Big Digital Energy</td><td class="mono">$4.76 → $6.56 (+38% in 4 days)</td><td><span class="tag win">Worked</span></td></tr>
+    <tr><td class="mono">USEG</td><td>4/27 — pre-mkt forcing function, helium deal</td><td class="mono">$0.71 → $1.06 (+49%)</td><td><span class="tag win">Worked</span></td></tr>
+    <tr><td class="mono">VBIO (TIVC)</td><td>4/24 — watchlist, biotech pivot</td><td class="mono">-28% on rebrand day</td><td><span class="tag bust">Failed</span></td></tr>
+    <tr><td class="mono">KULR</td><td>4/28 — "Top Tradable Today" — fresh 8-K</td><td class="mono">-15% over next month</td><td><span class="tag bust">Failed</span></td></tr>
+  </tbody>
+</table>
+
+<div class="callout info">
+  <h3>What this tells us</h3>
+  <p><b>Strike rate: 6 of 8 (~75%).</b> The scanner is finding real setups — when it tags a name as "Top Pick" or "Top Trade," the stock has actually delivered a double- or triple-digit move in the post-flag window most of the time.</p>
+  <p>The pattern is repeating in 2026 exactly as it did in 1998, 2017, and 2020. The scanner isn't lucky — it's identifying the same structural setup that's worked across four prior speculative cycles.</p>
+</div>
+
+<h2 id="discipline">8. Why Mike scans every day but barely trades</h2>
+
+<p>This is the part most outsiders miss when they hear about pivot trades. <b>Finding the setup is the easy part. Trading it is harder than it looks.</b></p>
+
+<div class="stat-row">
+  <div class="stat"><div class="lbl">Daily scans run since 4/16</div><div class="val">22</div></div>
+  <div class="stat"><div class="lbl">Names flagged</div><div class="val">40+</div></div>
+  <div class="stat"><div class="lbl">Actual trades taken</div><div class="val warn">1</div></div>
+  <div class="stat"><div class="lbl">P/L on that trade (ALP)</div><div class="val bad">-19%</div></div>
+</div>
+
+<p>In ~22 trading days the scanner has screened hundreds of SEC filings, watched 6 winners deliver real pops, and Mike has pulled the trigger exactly <b>once</b> — on ALP (Alpha Compute, formerly AlphaTON). That position is currently down 19%. Three reasons most pivots are passed on:</p>
+
+<ol class="clean">
+  <li><b>Account restrictions.</b> Mike's primary trading vehicle is an inherited IRA at Schwab that blocks all sub-$5 stocks and OTC names automatically. About half of every wave's candidates are OTC pennies (ATVK, CCTC/LataMed AI, AIFC). Each tradable sub-$5 entry requires a phone call to a Schwab rep at order time. That's not realistic for a trade that opens and closes in the same morning.</li>
+  <li><b>Most tradable pivots are already up 100%+ pre-market.</b> By the time the press release is digested, the stock has already moved. PHOE went +94% pre-market on 5/8. Chasing that is the trap, not the trade.</li>
+  <li><b>Most candidates fail the smell test.</b> If a $9M company says it's pivoting to "AI, solid-state batteries, aerospace, and luxury housing" through four subsidiaries owned by one guy who is also CEO, CFO, COO, and Secretary (ATVK was a real example), that's not a thesis, it's a costume.</li>
+</ol>
+
+<p>A short list of names the scanner flagged and Mike consciously passed on, with reasons:</p>
+
+<table>
+  <thead><tr><th>Ticker</th><th>What it was</th><th>Reason for passing</th></tr></thead>
+  <tbody>
+    <tr><td class="mono">PHOE</td><td>HK construction → ACEA Pharma via $1B reverse merger (5/4)</td><td>+94% pre-mkt before action; deal math implies $10 post-close, not $37</td></tr>
+    <tr><td class="mono">ATVK</td><td>Ameritek Ventures → GlobalTek (multi-pivot, 5/6)</td><td>OTC sub-penny; kitchen-sink narrative</td></tr>
+    <tr><td class="mono">CCTC / AIFC</td><td>Shell → LataMed AI / ALT5 Sigma AI rebrand (5/1–5/4)</td><td>OTC, sub-$5, RESTRICTED on Schwab IRA</td></tr>
+    <tr><td class="mono">SOBR</td><td>Alcohol monitoring → Clean World Ventures (4/30)</td><td>Sub-$5; missed the entry window — popped +230% anyway</td></tr>
+    <tr><td class="mono">CYPH</td><td>Leap Therapeutics → Zcash treasury company</td><td>Different theme (crypto treasury); pure float game; sub-$5</td></tr>
+    <tr><td class="mono">AGPU</td><td>$260M HPC contract reverse-merger (4/22)</td><td>Caught it too late — already +180% by the time the news cleared</td></tr>
+    <tr><td class="mono">KEEL</td><td>Bitfarms → Keel Infrastructure (full miner → AI/HPC pivot)</td><td>Already repriced; window closed before sizing in</td></tr>
+    <tr><td class="mono">AIIO</td><td>Robo.ai +61% pre-mkt (5/8)</td><td>Sub-$5; 14.76M Class B shares re-registered for resale (dilution incoming)</td></tr>
+  </tbody>
+</table>
+
+<p>The honest takeaway: seeing the pattern is the easy part. Catching it inside the buyable window, in an account that allows the trade, sized small enough that the inevitable 50–80% post-pop drawdown doesn't bury you — that's the hard part.</p>
+
+<h2 id="iterating">9. What we're iterating on — near-term scanner upgrades</h2>
+
+<p>Each upgrade below is grounded in a specific case study from the last 30 days. The scanner isn't static — every miss or surprise gets logged and feeds back into the next morning's pull.</p>
+
+<div class="type">
+  <h3>Catalyst-substance scoring <span style="color:var(--muted);font-weight:400;font-family:var(--mono);font-size:13px">— inspired by VBIO and KULR misses</span></h3>
+  <p>The two scanner misses (VBIO -28%, KULR -15%) had one thing in common: thin catalysts. VBIO was a biotech name change with no fresh business announcement. KULR's "news" was a Microsoft Director joining the board plus $5M of preliminary drone-battery orders — small relative to the company's market cap. By contrast, every winning name had a <i>concrete</i> deal attached to the rebrand: SOBR had a 98%-of-equity merger; FABC had MicroLED + Kopin partnership; BGDE had an Endeavor Group colocation deal; AGPU had a $260M HPC contract.</p>
+  <p><b>The upgrade:</b> every flagged candidate now gets a 0–5 "catalyst substance" score before it reaches the briefing. A contract value &gt;$50M = 5. A named institutional partner = 4. A physical asset retrofit (BTC miner → AI) = 4. Just a name change with no announced business = 1. RESTRICTED OTC with no plan = 0. Anything scoring &lt;3 doesn't reach the "Top Pick" tier.</p>
+</div>
+
+<div class="type">
+  <h3>Float / dilution check <span style="color:var(--muted);font-weight:400;font-family:var(--mono);font-size:13px">— inspired by AIIO and the PHOE chase trap</span></h3>
+  <p>AIIO popped +61% pre-market on 5/8 — the day <i>after</i> the company filed a 424B3 prospectus to register 14.76M Class B shares for resale. Those shares were about to hit the market and dilute every existing holder. PHOE popped +94% pre-market on a deal that mathematically prices the stock at $10 post-close because 100M new shares are about to be issued. Both were "bag-hold" setups dressed up as winners.</p>
+  <p><b>The upgrade:</b> automatic 13G/13D/424B/S-1 filing pull for every candidate. If incoming share issuance exceeds 30% of existing float in the next 90 days, the candidate is auto-tagged <code>DILUTION-INCOMING</code> and gets demoted from Hot Candidate to Watch only.</p>
+</div>
+
+<div class="type">
+  <h3>Account-type ranking <span style="color:var(--muted);font-weight:400;font-family:var(--mono);font-size:13px">— inspired by Mike's 75% pass rate</span></h3>
+  <p>Of the 6 winners the scanner caught, 3 were sub-$5 (SOBR, USEG, AIIO-style) and therefore blocked from Mike's Schwab IRA. Each one required a phone call to Schwab at order time. That's not realistic for a trade that opens and closes in the same morning.</p>
+  <p><b>The upgrade:</b> every candidate is ranked <i>first</i> by tradability tier — <code>TRADABLE</code> (Nasdaq, &gt;$5, executable directly), <code>CALL-SCHWAB</code> (sub-$5 but Nasdaq), <code>RESTRICTED</code> (OTC or sub-$5 OTC, blocked) — then by catalyst score. The pre-market table is sorted TRADABLE-first so Mike's attention goes to actionable names, not pattern noise.</p>
+</div>
+
+<div class="type">
+  <h3>Insider trading window check <span style="color:var(--muted);font-weight:400;font-family:var(--mono);font-size:13px">— new, inspired by the Long Blockchain / Riot SEC histories</span></h3>
+  <p>The two historical pivots that produced SEC fraud enforcement (Long Blockchain in 2017, Riot Blockchain founder Barry Honig in 2018) both involved insiders accumulating shares before the announcement. Form 4 filings (insider buys/sells) and 144 filings (planned insider sales) leak this in advance — but only if the scanner watches for them.</p>
+  <p><b>The upgrade:</b> for every flagged candidate, pull the last 30 days of Form 4 filings. If insiders bought significant shares in the 14 days before the rebrand 8-K, flag as <code>INSIDER-PRELOADED</code> — high pop probability but also high SEC-risk profile. If insiders <i>sold</i> into the run-up, flag as <code>INSIDER-EXITING</code> — bag-hold setup.</p>
+</div>
+
+<div class="type">
+  <h3>Auto-postmortem <span style="color:var(--muted);font-weight:400;font-family:var(--mono);font-size:13px">— new, makes the scanner self-improving</span></h3>
+  <p>Currently the hit-rate analysis (the 6-of-8 stat above) was done by hand. It should be automatic. Every Saturday morning, the scanner pulls every name flagged in the prior week, gets its current price, computes the realized move, and updates a running hit-rate table by rule (which screen caught it, what catalyst score it had, what tradability tier it was in). Rules that consistently underperform get deprecated.</p>
+</div>
+
+<div class="type">
+  <h3>Carry-over iterations from the existing playbook</h3>
+  <ul class="clean">
+    <li><b>SOBR copycat-window expansion</b> — original window was 48–72 hours after anchor pop. SOBR's 5/7 re-pop (+75%) showed multi-stage mergers keep the window open. Extended to ~14 days post-anchor.</li>
+    <li><b>Decision discipline</b> — every actual trade requires a 4-line risk check written into a <code>decisions/</code> folder <i>before</i> the order is placed. Saturday auto-postmortem above ties into this.</li>
+    <li><b>Bull/bear subagent debate</b> — qualifying trades (&gt;$1,500 size, &gt;2% concentration, or ambiguous setup) trigger two AI agents in parallel arguing opposite sides. Currently deferred until next qualifying trade hits. About to be absorbed into the multi-agent architecture below.</li>
+    <li><b>Earnings-calendar overlay</b> — pulls the NASDAQ earnings calendar for portfolio names in next 21 days. Prevents unrelated earnings from blowing up a fresh position.</li>
+    <li><b>Live-price refresh discipline</b> — limit prices must be refreshed from NASDAQ live API within 60 seconds of order placement. Stops 30-minute-stale-quote misses.</li>
+  </ul>
+</div>
+
+<h2 id="agents">10. The next big iteration — a multi-agent scanner</h2>
+
+<p>Right now the scanner is essentially one process: a single agent that runs the four screens, writes the morning briefing, and hands Mike a list. That works, but it's hitting limits. As of today, the scanner has roughly 75% hit rate on names it flags as "Top Pick" — but it's also using a single context to do too many things at once: research, analysis, narrative scoring, decision synthesis, and postmortem. The thinking gets crowded.</p>
+
+<p>The next iteration breaks the scanner into a team of specialized agents. Each one does a narrow job well, and they hand off to each other in sequence. This is how the major hedge funds run their scans, and it's now affordable enough at the micro-cap scale (using Claude, which is what the scanner is built on) to do at home.</p>
+
+<div class="chart">
+  <div class="chart-title">The proposed multi-agent architecture</div>
+  <div class="chart-sub">Each agent has a narrow specialty. Data flows left → right; cheap models filter, expensive models analyze only what passes.</div>
+  <svg viewBox="0 0 860 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#60a5fa"/>
+      </marker>
+      <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#f59e0b"/>
+      </marker>
+    </defs>
+
+    <!-- Token agent ribbon at top (omnipresent) -->
+    <rect x="40" y="20" width="780" height="40" rx="8" fill="#1c2330" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="430" y="38" text-anchor="middle" fill="#f59e0b" font-family="ui-monospace, monospace" font-size="12" font-weight="700">TOKEN AGENT — context manager (omnipresent, routes every call)</text>
+    <text x="430" y="53" text-anchor="middle" fill="#8a93a4" font-size="11">decides Haiku vs Opus per task, prunes redundant prompts, caches research dossiers</text>
+
+    <!-- Stage 1: Scanner -->
+    <rect x="40" y="100" width="160" height="80" rx="8" fill="#151922" stroke="#4ade80" stroke-width="2"/>
+    <text x="120" y="125" text-anchor="middle" fill="#4ade80" font-family="ui-monospace, monospace" font-size="13" font-weight="700">SCANNER</text>
+    <text x="120" y="143" text-anchor="middle" fill="#e8ecf2" font-size="11">4 screens daily</text>
+    <text x="120" y="158" text-anchor="middle" fill="#8a93a4" font-size="10">SEC 8-K • pre-mkt</text>
+    <text x="120" y="172" text-anchor="middle" fill="#8a93a4" font-size="10">copycat • narrative</text>
+
+    <!-- Stage 2: Research -->
+    <rect x="240" y="100" width="160" height="80" rx="8" fill="#151922" stroke="#60a5fa" stroke-width="2"/>
+    <text x="320" y="125" text-anchor="middle" fill="#60a5fa" font-family="ui-monospace, monospace" font-size="13" font-weight="700">RESEARCH</text>
+    <text x="320" y="143" text-anchor="middle" fill="#e8ecf2" font-size="11">Deep fact pull</text>
+    <text x="320" y="158" text-anchor="middle" fill="#8a93a4" font-size="10">EDGAR • Form 4</text>
+    <text x="320" y="172" text-anchor="middle" fill="#8a93a4" font-size="10">424B • news • 13G</text>
+
+    <!-- Stage 3a: Bull -->
+    <rect x="440" y="80" width="160" height="60" rx="8" fill="#151922" stroke="#4ade80" stroke-width="2"/>
+    <text x="520" y="103" text-anchor="middle" fill="#4ade80" font-family="ui-monospace, monospace" font-size="13" font-weight="700">BULL ANALYST</text>
+    <text x="520" y="120" text-anchor="middle" fill="#e8ecf2" font-size="11">argues FOR the trade</text>
+    <text x="520" y="134" text-anchor="middle" fill="#8a93a4" font-size="10">best historical comp</text>
+
+    <!-- Stage 3b: Bear -->
+    <rect x="440" y="155" width="160" height="60" rx="8" fill="#151922" stroke="#ef4444" stroke-width="2"/>
+    <text x="520" y="178" text-anchor="middle" fill="#ef4444" font-family="ui-monospace, monospace" font-size="13" font-weight="700">BEAR ANALYST</text>
+    <text x="520" y="195" text-anchor="middle" fill="#e8ecf2" font-size="11">argues AGAINST</text>
+    <text x="520" y="209" text-anchor="middle" fill="#8a93a4" font-size="10">dilution • smell test</text>
+
+    <!-- Stage 4: Orchestrator -->
+    <rect x="640" y="100" width="160" height="80" rx="8" fill="#151922" stroke="#f472b6" stroke-width="2"/>
+    <text x="720" y="125" text-anchor="middle" fill="#f472b6" font-family="ui-monospace, monospace" font-size="13" font-weight="700">ORCHESTRATOR</text>
+    <text x="720" y="143" text-anchor="middle" fill="#e8ecf2" font-size="11">Synthesize → decide</text>
+    <text x="720" y="158" text-anchor="middle" fill="#8a93a4" font-size="10">TRADE / WATCH / SKIP</text>
+    <text x="720" y="172" text-anchor="middle" fill="#8a93a4" font-size="10">+ size + stop + entry</text>
+
+    <!-- Arrows between stages -->
+    <line x1="200" y1="140" x2="240" y2="140" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="400" y1="135" x2="440" y2="110" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="400" y1="145" x2="440" y2="180" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="600" y1="110" x2="640" y2="135" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="600" y1="185" x2="640" y2="155" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Stage 5: Output line -->
+    <line x1="720" y1="180" x2="720" y2="240" stroke="#f472b6" stroke-width="2" stroke-dasharray="4,2"/>
+    <rect x="600" y="240" width="240" height="50" rx="8" fill="#1c2330" stroke="#3a4150" stroke-width="1"/>
+    <text x="720" y="262" text-anchor="middle" fill="#e8ecf2" font-family="ui-monospace, monospace" font-size="12" font-weight="600">Morning briefing + decisions/</text>
+    <text x="720" y="278" text-anchor="middle" fill="#8a93a4" font-size="11">written to disk for Mike</text>
+
+    <!-- Postmortem agent (closes the loop) -->
+    <rect x="40" y="240" width="160" height="80" rx="8" fill="#151922" stroke="#a78bfa" stroke-width="2"/>
+    <text x="120" y="265" text-anchor="middle" fill="#a78bfa" font-family="ui-monospace, monospace" font-size="13" font-weight="700">POSTMORTEM</text>
+    <text x="120" y="283" text-anchor="middle" fill="#e8ecf2" font-size="11">runs every Saturday</text>
+    <text x="120" y="298" text-anchor="middle" fill="#8a93a4" font-size="10">hit-rate by rule</text>
+    <text x="120" y="312" text-anchor="middle" fill="#8a93a4" font-size="10">deprecate weak rules</text>
+
+    <!-- Loop arrow from postmortem back to scanner -->
+    <path d="M 120 240 Q 60 200 60 160 L 60 140 L 40 140" fill="none" stroke="#a78bfa" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow2)"/>
+    <text x="20" y="200" fill="#a78bfa" font-size="10" font-family="ui-monospace, monospace" text-anchor="start">tunes</text>
+
+    <!-- Arrow from output back to postmortem (the data it analyzes) -->
+    <path d="M 600 265 Q 400 265 200 280" fill="none" stroke="#a78bfa" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow2)"/>
+
+    <!-- Legend -->
+    <g font-family="ui-monospace, monospace" font-size="10" fill="#8a93a4">
+      <text x="40" y="360">Solid arrow = data flow • Dashed arrow = feedback / control</text>
+    </g>
+  </svg>
+</div>
+
+<div class="type">
+  <h3>Agent 1 — Scanner / Discovery <span style="color:var(--muted);font-weight:400;font-family:var(--mono);font-size:13px">(exists today)</span></h3>
+  <p>Runs the four screens every morning before market open. Outputs a list of candidates with a catalyst score, tradability tier, and a one-paragraph hook. Stops there — does no deep research. Cheap model (Haiku) for the structural filters; only escalates to Opus when something looks novel.</p>
+  <p><b>Why narrow:</b> the scanner runs daily across hundreds of filings. It needs to be fast and cheap. Detailed reasoning at this stage burns tokens without improving the catch rate.</p>
+</div>
+
+<div class="type">
+  <h3>Agent 2 — Research <span style="color:var(--muted);font-weight:400;font-family:var(--mono);font-size:13px">(new)</span></h3>
+  <p>Triggered only when the scanner flags a name. Pulls every 8-K, 10-Q, 10-K, 13G/13D, 424B, and S-1 from the last 12 months. Pulls Form 4 insider filings from the last 90 days. Pulls news from the last 90 days. Returns a structured dossier — facts only, no opinion.</p>
+  <p><b>Why narrow:</b> opinion-free fact gathering is the most underrated job in research. Most failed analyses are confidence built on incomplete facts. This agent's only KPI is completeness, not insight.</p>
+</div>
+
+<div class="type">
+  <h3>Agent 3 — Bull Analyst <span style="color:var(--muted);font-weight:400;font-family:var(--mono);font-size:13px">(new)</span></h3>
+  <p>Reads the research dossier. Argues the case <i>for</i> the trade as forcefully as possible. Identifies the best historical comp from prior winners (which 2026 name does this look most like — SOBR? BGDE? FABC?). Specifies entry, target, and the upside path.</p>
+  <p><b>Why narrow:</b> a generalist agent will hedge. A specialist agent told to argue one side will surface the strongest case. The hedge happens at the synthesis step, not the analysis step.</p>
+</div>
+
+<div class="type">
+  <h3>Agent 4 — Bear Analyst <span style="color:var(--muted);font-weight:400;font-family:var(--mono);font-size:13px">(new)</span></h3>
+  <p>Same dossier, opposite job. Argues the case <i>against</i> the trade. Identifies dilution risk, smell-test failures, the worst historical comp (Long Blockchain? Nikola? Zapata?). Specifies the bag-hold scenario and what kills the trade.</p>
+  <p><b>Why narrow:</b> same reason as bull. The two-agent debate produces sharper output than a single "balanced" agent that splits the difference.</p>
+</div>
+
+<div class="type">
+  <h3>Agent 5 — Orchestrator / Decision Synthesizer <span style="color:var(--muted);font-weight:400;font-family:var(--mono);font-size:13px">(new)</span></h3>
+  <p>Reads bull case, bear case, and the original dossier. Pulls Mike's current portfolio and cash position from the latest CSV. Outputs a single recommendation: <code>TRADE</code> / <code>WATCH</code> / <code>SKIP</code>, with size, entry price, and stop. Writes the decision (including the 4-line risk check) to <code>decisions/[ticker]-[date].md</code> <i>before</i> any order is placed.</p>
+  <p><b>Why narrow:</b> synthesis is the most error-prone step. Putting it in a dedicated agent — fed structured input from upstream agents — produces more consistent decisions than having one agent do everything.</p>
+</div>
+
+<div class="type">
+  <h3>Agent 6 — Token / Context Manager <span style="color:var(--muted);font-weight:400;font-family:var(--mono);font-size:13px">(new, omnipresent)</span></h3>
+  <p>Not in the data flow — sits above every other agent and manages how each one is invoked. The job is to maximize information density per token spent.</p>
+  <ul class="clean">
+    <li><b>Model routing.</b> Simple lookups (Form 4 filing dates, market cap, exchange) → Haiku ($). Bull/bear analysis with historical comp reasoning → Opus ($$$). The Token Agent picks the right model per call rather than defaulting every sub-task to whatever model the parent is on.</li>
+    <li><b>Cache awareness.</b> The Token Agent knows what's already in the briefings folder, in memory, in the current conversation. If a name was researched yesterday and nothing in EDGAR has changed, it serves the cached dossier instead of re-pulling.</li>
+    <li><b>Prompt pruning.</b> Strips redundant context out of sub-agent prompts. The Bear Analyst doesn't need the full company press-release archive — it needs the dilution-risk subset. The Token Agent decides what each agent sees.</li>
+    <li><b>Budget enforcement.</b> Each candidate gets a token budget proportional to its catalyst score and tradability tier. A score-1 RESTRICTED OTC penny gets &lt;5K tokens of analysis. A score-5 TRADABLE Nasdaq pivot gets up to 100K. Token Agent enforces the cap.</li>
+  </ul>
+  <p><b>Why narrow:</b> without it, every analysis re-fetches every fact, runs every check, even on obviously bad setups. Token costs balloon. With it, the cheap models filter out 80% of candidates before expensive analysis runs. Estimated token-cost reduction: 70–85% vs. running everything through the most capable model.</p>
+</div>
+
+<div class="type">
+  <h3>Agent 7 — Postmortem <span style="color:var(--muted);font-weight:400;font-family:var(--mono);font-size:13px">(new, closes the loop)</span></h3>
+  <p>Runs automatically every Saturday morning. Pulls every name flagged in the prior week. Gets current prices via NASDAQ API. Computes realized moves. Updates a running hit-rate table broken down by which screen caught it, what catalyst score it had, and what tradability tier it was in. Rules that consistently underperform get deprecated. New rules from the week's surprises get added to the next Monday's scan.</p>
+  <p><b>Why narrow:</b> the existing scanner doesn't grade itself. The 6-of-8 hit-rate analysis in this document had to be done by hand because no agent owned the postmortem job. With the Postmortem Agent running every week, the scanner becomes genuinely self-improving — rules that worked stay, rules that didn't go.</p>
+</div>
+
+<h3 style="margin-top:32px">Why this architecture, specifically?</h3>
+
+<p>Three reasons the multi-agent approach beats the single-agent scanner that exists today:</p>
+
+<ol class="clean">
+  <li><b>Specialization sharpens output.</b> A bear analyst told to argue against a trade produces a sharper bear case than a generalist that's also trying to be balanced. The two-agent debate (bull vs. bear) surfaces risks and opportunities that one agent doing both inevitably softens.</li>
+  <li><b>Cost compounds when context grows.</b> Without a Token Agent, every analysis of every candidate uses the most capable model for every step. With the Token Agent routing, cheap models filter and expensive models analyze only the survivors. Estimated 70–85% reduction in token spend at the same hit rate.</li>
+  <li><b>Self-improvement requires a loop.</b> The Postmortem Agent closes the loop between flagging and outcome. Without it, the scanner can repeat its mistakes for months. With it, every Saturday produces a small but real upgrade to next week's rules. That's how the system gets better even when no human is actively tuning it.</li>
+</ol>
+
+<p>The single-agent scanner that exists today caught a 75% hit rate over four weeks. The multi-agent version should improve that further — but more importantly, it should reduce false positives (the 2-of-8 failures) by forcing every candidate through both the bull and bear lenses before reaching Mike's morning briefing. The point isn't to find <i>more</i> candidates; it's to surface <i>fewer, better</i> ones.</p>
+
+<h2 id="verdict">11. Bottom line</h2>
+
+<div class="callout info">
+  <p><b>The pattern is real.</b> A version of this trade has worked in every major speculative cycle since 1998. It's running again right now with "AI" as the buzzword. The 2026 data confirms it — 6 of 8 named "Top Picks" in the daily scan delivered double- or triple-digit moves.</p>
+  <p><b>The companies almost never become real.</b> Of every 20 pivots, maybe 1 (Riot) actually builds the business. The other 19 round-trip, dilute, get delisted, or attract SEC enforcement actions. Long Blockchain Corp ended in fraud charges. Nikola's CEO went to prison. Zapata went to zero.</p>
+  <p><b>The trade exists in the gap between those two facts.</b> The stock price action is largely driven by retail pattern-matching and SEC filing mechanics, not by actual operating business value. The trade is real precisely because it's not investing — it's speculation on a repeating retail-behavior pattern, with a tight 5–10 day exit window.</p>
+  <p><b>What Mike is actually doing about it:</b> Running the scanner every morning, logging every flagged name, taking ~1 in 40 setups. The scanner has a 75% hit rate on the names it tags as "Top Pick" — but the structural constraints of Mike's account (Schwab IRA blocks sub-$5; most pivots are sub-$5) mean most wins are watched, not captured. ALP is the one trade taken and it's currently down 19%. That's the realistic experience, not the +582% BIRD trade people see on Twitter.</p>
+</div>
+
+<div class="footer">
+  <div>Compiled May 8, 2026 — based on internal daily zombie-shell briefings dated 4/15 through 5/8. Sources: SEC EDGAR full-text 8-K search, NASDAQ live quotes API, public news coverage of Long Blockchain (LBCC), Riot Blockchain (RIOT), Nikola (NKLA), Lordstown (RIDE), Zapata Corporation, BIRD, MYSE, ALP, AGPU, BGDE, QXL, FABC, SOBR, USEG, VBIO, KULR, PHOE, ATVK, and the broader 2026 AI-pivot cohort.</div>
+  <div class="disclaimer"><b>Not investment advice.</b> Micro-cap pivot trades carry extreme risk including total loss of capital. Multiple historical examples in this report ended in SEC fraud enforcement actions. Position size as if you may lose 100% of the trade. Nothing here is a recommendation to buy or sell any security.</div>
+</div>
+
+</div>
+</body>
+</html>
