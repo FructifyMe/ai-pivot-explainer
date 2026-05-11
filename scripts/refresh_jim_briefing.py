@@ -180,6 +180,62 @@ def extract_scan_body(briefing_md: str) -> str:
     return '\n\n'.join(out_parts) if out_parts else '<p>No scan sections extracted.</p>'
 
 
+
+
+# ---------- email send ----------
+
+import smtplib
+import ssl
+from email.message import EmailMessage
+from email.utils import formataddr
+
+
+DEFAULT_SECRETS_DIR = pathlib.Path.home() / '.jim-secrets'
+DEFAULT_PASSWORD_FILE = DEFAULT_SECRETS_DIR / 'm365_app_password.txt'
+
+SMTP_HOST = 'smtp-mail.outlook.com'
+SMTP_PORT = 587  # STARTTLS
+SENDER_ADDR = 'mikefarley@msn.com'
+SENDER_NAME = 'Mike Farley'
+JIM_ADDR = 'jfarley24o3@comcast.net'
+
+
+def load_password(password_file: pathlib.Path) -> str:
+    if not password_file.exists():
+        raise SystemExit(
+            f'Password file not found: {password_file}\n'
+            f'Create it with the MSN app password from account.live.com/proofs/AppPassword.\n'
+            f'Run: mkdir -p {password_file.parent} && chmod 700 {password_file.parent} && '
+            f'echo YOUR_APP_PASSWORD > {password_file} && chmod 600 {password_file}'
+        )
+    return password_file.read_text(encoding='utf-8').strip()
+
+
+def build_message(html_body: str, *, to_addr: str, subject: str) -> EmailMessage:
+    msg = EmailMessage()
+    msg['Subject'] = subject
+    msg['From'] = formataddr((SENDER_NAME, SENDER_ADDR))
+    msg['To'] = to_addr
+    # Plain-text fallback for clients that don't render HTML
+    msg.set_content(
+        f'Your daily brief is best viewed in HTML. '
+        f'Open this email in a browser or in a modern mail client. '
+        f'Live archive: https://fructifyme.github.io/ai-pivot-explainer/jim/\n\n— Mike'
+    )
+    msg.add_alternative(html_body, subtype='html')
+    return msg
+
+
+def send_email(msg: EmailMessage, *, password: str) -> None:
+    context = ssl.create_default_context()
+    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=30) as s:
+        s.ehlo()
+        s.starttls(context=context)
+        s.ehlo()
+        s.login(SENDER_ADDR, password)
+        s.send_message(msg)
+
+
 # ---------- main flow ----------
 
 def find_latest_briefing(briefings_dir: pathlib.Path) -> pathlib.Path:
@@ -206,6 +262,11 @@ def main() -> None:
     p.add_argument('--repo-dir', required=True, type=pathlib.Path)
     p.add_argument('--commit', action='store_true', help='git add + commit the result')
     p.add_argument('--push', action='store_true', help='git push (implies --commit)')
+    p.add_argument('--send', action='store_true', help='actually email the brief via SMTP')
+    p.add_argument('--dry-run-to-me', action='store_true',
+                   help='with --send, send to mikefarley@msn.com instead of Jim — for testing')
+    p.add_argument('--password-file', type=pathlib.Path, default=DEFAULT_PASSWORD_FILE,
+                   help='Path to file containing the MSN app password')
     args = p.parse_args()
 
     latest = find_latest_briefing(args.briefings_dir)
@@ -249,7 +310,7 @@ def main() -> None:
         '<span style="display:inline-block;background:#fef3c7;color:#b45309;border:1px solid #fde68a;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;padding:1px 8px;border-radius:99px;letter-spacing:0.05em;font-weight:600">RESTRICTED</span>'
     )
     email_path.write_text(email_html, encoding='utf-8')
-    print(f'Wrote {email_path} (paste into Gmail compose, or load with --send via SMTP — not yet implemented)')
+    print(f'Wrote {email_path} (pass --send to email it via SMTP)')
 
     if args.commit or args.push:
         git(args.repo_dir, 'add', 'jim/index.html', 'jim/email.html')
@@ -262,6 +323,19 @@ def main() -> None:
         if args.push:
             git(args.repo_dir, 'push')
             print('Pushed.')
+
+    if args.send:
+        password = load_password(args.password_file)
+        to_addr = SENDER_ADDR if args.dry_run_to_me else JIM_ADDR
+        subject = f"Jim's Daily Brief — {common['edition_date']} · {common['headline_one_liner'][:60]}"
+        msg = build_message(email_path.read_text(encoding='utf-8'),
+                            to_addr=to_addr, subject=subject)
+        try:
+            send_email(msg, password=password)
+            print(f'Sent to {to_addr}: "{subject}"')
+        except Exception as e:
+            print(f'SEND FAILED: {type(e).__name__}: {e}')
+            raise SystemExit(2)
 
 
 if __name__ == '__main__':
