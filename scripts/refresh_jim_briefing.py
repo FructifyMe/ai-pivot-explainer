@@ -139,6 +139,24 @@ SECTIONS_OF_INTEREST = [
 ]
 
 
+def extract_headline_oneliner(briefing_md: str) -> str:
+    """Pull the first bullet from CHAT-FIRST SUMMARY for the email subject/h1."""
+    m = CHAT_FIRST_RE.search(briefing_md)
+    if not m:
+        return 'Today\'s scan'
+    first_line = next(
+        (ln for ln in m.group(1).splitlines() if ln.lstrip().startswith(('1.', '- '))),
+        ''
+    )
+    # Strip leading "1." / "- " and any markdown bold
+    txt = re.sub(r'^\s*(?:\d+\.|-)\s*', '', first_line)
+    txt = re.sub(r'\*\*([^*]+)\*\*', r'\1', txt)
+    # Trim to ~90 chars for subject line
+    if len(txt) > 90:
+        txt = txt[:87].rsplit(' ', 1)[0] + '...'
+    return txt.strip() or 'Today\'s scan'
+
+
 def extract_headline(briefing_md: str) -> str:
     m = CHAT_FIRST_RE.search(briefing_md)
     if not m:
@@ -171,16 +189,11 @@ def find_latest_briefing(briefings_dir: pathlib.Path) -> pathlib.Path:
     return files[-1]
 
 
-def render(template: str, *, edition_date: str, refresh_time: str, scan_date: str,
-           headline_html: str, scan_body_html: str) -> str:
-    return (
-        template
-        .replace('{{EDITION_DATE}}', edition_date)
-        .replace('{{REFRESH_TIME}}', refresh_time)
-        .replace('{{SCAN_DATE}}', scan_date)
-        .replace('{{HEADLINE_HTML}}', headline_html)
-        .replace('{{SCAN_BODY_HTML}}', scan_body_html)
-    )
+def render(template: str, **subs: str) -> str:
+    out = template
+    for k, v in subs.items():
+        out = out.replace('{{' + k.upper() + '}}', v)
+    return out
 
 
 def git(repo: pathlib.Path, *args: str) -> None:
@@ -203,27 +216,34 @@ def main() -> None:
     headline_html = '<div class="callout info"><h3>Read this first</h3>' + extract_headline(briefing_md) + '</div>'
     scan_body_html = extract_scan_body(briefing_md)
 
-    template_path = args.repo_dir / 'jim' / 'template.html'
-    if not template_path.exists():
-        raise SystemExit(f'Template not found at {template_path}')
-    template = template_path.read_text(encoding='utf-8')
+    page_template_path = args.repo_dir / 'jim' / 'template.html'
+    email_template_path = args.repo_dir / 'jim' / 'email-template.html'
+    for p in (page_template_path, email_template_path):
+        if not p.exists():
+            raise SystemExit(f'Template not found at {p}')
+    page_template = page_template_path.read_text(encoding='utf-8')
+    email_template = email_template_path.read_text(encoding='utf-8')
 
     now = dt.datetime.now()
-    out = render(
-        template,
+    common = dict(
         edition_date=now.strftime('%Y-%m-%d'),
         refresh_time=now.strftime('%H:%M ET (auto)'),
         scan_date=scan_date,
         headline_html=headline_html,
         scan_body_html=scan_body_html,
+        headline_one_liner=extract_headline_oneliner(briefing_md),
     )
 
-    out_path = args.repo_dir / 'jim' / 'index.html'
-    out_path.write_text(out, encoding='utf-8')
-    print(f'Wrote {out_path} from briefing {latest.name}')
+    page_path = args.repo_dir / 'jim' / 'index.html'
+    page_path.write_text(render(page_template, **common), encoding='utf-8')
+    print(f'Wrote {page_path}')
+
+    email_path = args.repo_dir / 'jim' / 'email.html'
+    email_path.write_text(render(email_template, **common), encoding='utf-8')
+    print(f'Wrote {email_path} (paste into Gmail compose, or load with --send via SMTP — not yet implemented)')
 
     if args.commit or args.push:
-        git(args.repo_dir, 'add', 'jim/index.html')
+        git(args.repo_dir, 'add', 'jim/index.html', 'jim/email.html')
         msg = f'Jim daily refresh — {now.strftime("%Y-%m-%d")} (from {latest.name})'
         try:
             git(args.repo_dir, 'commit', '-m', msg)
