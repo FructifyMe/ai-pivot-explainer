@@ -190,12 +190,12 @@ from email.message import EmailMessage
 from email.utils import formataddr
 
 
-DEFAULT_SECRETS_DIR = pathlib.Path.home() / '.jim-secrets'
-DEFAULT_PASSWORD_FILE = DEFAULT_SECRETS_DIR / 'm365_app_password.txt'
+import os; _WORKSPACE_DIRS = list(pathlib.Path('/sessions').glob('*/mnt/Claude CoWork Stock Analyst/.secrets'))
+DEFAULT_PASSWORD_FILE = pathlib.Path(os.environ.get('JIM_GMAIL_PASSWORD_FILE') or (str(_WORKSPACE_DIRS[0] / 'gmail_app_password.txt') if _WORKSPACE_DIRS else str(pathlib.Path.home() / '.jim-secrets' / 'gmail_app_password.txt')))
 
-SMTP_HOST = 'smtp-mail.outlook.com'
+SMTP_HOST = 'smtp.gmail.com'
 SMTP_PORT = 587  # STARTTLS
-SENDER_ADDR = 'mikefarley@msn.com'
+SENDER_ADDR = 'fructifyme@gmail.com'
 SENDER_NAME = 'Mike Farley'
 JIM_ADDR = 'jfarley24o3@comcast.net'
 
