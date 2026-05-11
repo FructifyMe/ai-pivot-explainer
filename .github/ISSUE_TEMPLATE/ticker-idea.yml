@@ -1,0 +1,41 @@
+name: Ticker idea
+description: Suggest a ticker for Mike's scan / book consideration
+title: "[Ticker] <SYMBOL> — <one-line thesis>"
+labels: ["ticker-idea", "jim"]
+body:
+  - type: input
+    id: ticker
+    attributes:
+      label: Ticker symbol
+      placeholder: e.g. PHOE, ATVK, MTZ
+    validations:
+      required: true
+  - type: textarea
+    id: thesis
+    attributes:
+      label: Why this one — in one paragraph
+      description: What's the setup? Filing, catalyst, narrative shift, repeatable pattern? Be concrete.
+      placeholder: "8-K filed 5/8 announcing pivot from X to Y. Cap is roughly $___. The reason it's interesting is..."
+    validations:
+      required: true
+  - type: input
+    id: catalyst
+    attributes:
+      label: Specific catalyst / dated event
+      description: Earnings, filing, court date, contract award — what's the trigger?
+      placeholder: "Q2 close pending HSR; ex-date 5/22; etc."
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: How time-sensitive?
+      options:
+        - "Look this week — there's a dated catalyst"
+        - "Sometime this month is fine"
+        - "Just a name worth knowing — no rush"
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: Counter-arguments you've already considered, where you saw the name, links.

@@ -1,0 +1,22 @@
+name: Opt in to a scan
+description: Add one of Mike's barrels to your daily briefing (auto-filed by the page buttons)
+title: "Opt-in: <scan name>"
+labels: ["opt-in", "jim"]
+body:
+  - type: textarea
+    id: which
+    attributes:
+      label: Which scan(s)?
+      description: Pre-filled by the page button. Edit if you want to opt into multiples at once.
+    validations:
+      required: true
+  - type: dropdown
+    id: cadence
+    attributes:
+      label: How often
+      options:
+        - "Include in the daily email"
+        - "Just the weekly recap is fine"
+        - "Only when this scan fires a real signal"
+    validations:
+      required: true

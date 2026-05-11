@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Read the AI-Pivot Explainer first
+    url: https://fructifyme.github.io/ai-pivot-explainer/
+    about: The deep-context page that explains what we're hunting and why.

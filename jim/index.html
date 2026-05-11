@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Jim's Briefing — Daily Pivot & Policy Scan</title>
+<style>
+  :root{
+    --bg:#0e1014; --panel:#151922; --panel2:#1c2330; --line:#2a3140;
+    --text:#e8ecf2; --muted:#8a93a4; --accent:#4ade80; --accent2:#60a5fa;
+    --warn:#f59e0b; --bad:#ef4444; --pink:#f472b6;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent2)}
+  .wrap{max-width:920px;margin:0 auto;padding:48px 24px 80px}
+  header{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:36px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;margin-bottom:14px}
+  h1{font-size:36px;line-height:1.15;margin:0 0 14px;letter-spacing:-0.02em}
+  h2{font-size:22px;margin:44px 0 14px;letter-spacing:-0.01em;border-top:1px solid var(--line);padding-top:32px}
+  h2:first-of-type{border-top:none;padding-top:0}
+  h3{font-size:17px;margin:22px 0 8px}
+  p{margin:10px 0}
+  .sub{color:var(--muted);font-size:16px;max-width:760px}
+  .datebar{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:6px}
+  .datebar b{color:var(--text)}
+  .callout{background:linear-gradient(135deg,#1c2330 0%, #1a1f2b 100%);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:18px 22px;margin:20px 0}
+  .callout.warn{border-left-color:var(--warn)}
+  .callout.bad{border-left-color:var(--bad);background:#221a18;border-color:#4a2a22}
+  .callout.info{border-left-color:var(--accent2)}
+  .callout h3{margin-top:0}
+  .callout.warn h3{color:var(--warn)}
+  .callout.bad h3{color:var(--bad)}
+  .callout.info h3{color:var(--accent2)}
+  .barrel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px 22px;margin:14px 0}
+  .barrel .header-row{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+  .barrel .tag{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent);background:rgba(74,222,128,.1);padding:2px 10px;border-radius:99px;letter-spacing:.05em}
+  .barrel .tag.live{color:var(--accent);background:rgba(74,222,128,.12)}
+  .barrel .tag.armed{color:var(--accent2);background:rgba(96,165,250,.12)}
+  .barrel .tag.watch{color:var(--warn);background:rgba(245,158,11,.14)}
+  .barrel h3{margin:0;font-size:18px}
+  .barrel .meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:2px}
+  .barrel .row{display:grid;grid-template-columns:130px 1fr;gap:12px;margin:10px 0;font-size:14.5px}
+  .barrel .row .key{color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding-top:2px}
+  .barrel .optin{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);font-size:13.5px}
+  .barrel .optin a{display:inline-block;background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.3);color:var(--accent2);padding:6px 14px;border-radius:6px;text-decoration:none;font-family:var(--mono);font-size:12px;letter-spacing:.03em}
+  .barrel .optin a:hover{background:rgba(96,165,250,.18)}
+  @media (max-width:680px){
+    .barrel .row{grid-template-columns:1fr;gap:4px}
+  }
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;font-weight:600}
+  td.num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+  td .ticker{font-family:var(--mono);font-weight:700;color:var(--accent2)}
+  .pill{display:inline-block;font-family:var(--mono);font-size:10.5px;padding:1px 8px;border-radius:99px;letter-spacing:.05em}
+  .pill.tradable{color:var(--accent);background:rgba(74,222,128,.12)}
+  .pill.restricted{color:var(--warn);background:rgba(245,158,11,.14)}
+  ol.clean,ul.clean{padding-left:22px}
+  ol.clean li,ul.clean li{margin:6px 0}
+  .feedback{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:18px 0}
+  .feedback a{display:block;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;text-decoration:none;color:var(--text);transition:border-color .15s}
+  .feedback a:hover{border-color:var(--accent2)}
+  .feedback .label{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase}
+  .feedback .title{font-size:16px;font-weight:600;margin:6px 0 4px}
+  .feedback .desc{font-size:13px;color:var(--muted);line-height:1.45}
+  @media (max-width:680px){.feedback{grid-template-columns:1fr}}
+  .footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);line-height:1.55}
+  .footer .disclaimer{margin-top:16px;padding:14px 16px;background:#221a18;border:1px solid #4a2a22;border-radius:8px;color:#f1c9b8}
+  .toc{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:22px 0;font-size:14px}
+  .toc .title{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}
+  .toc ol{padding-left:22px;margin:0}
+  .toc li{margin:4px 0}
+  .toc a{color:var(--text);text-decoration:none}
+  .toc a:hover{color:var(--accent2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Jim's Briefing — Daily</div>
+  <h1>What the scanners caught this morning.</h1>
+  <p class="sub">Mike's daily pivot &amp; policy scan, rebuilt each morning. Plain conviction, no hedging. Built for engineers — meaning: every claim has a number behind it.</p>
+  <div class="datebar"><b>Edition:</b> 2026-05-11 &nbsp;·&nbsp; <b>Refreshed:</b> 17:58 ET (auto) &nbsp;·&nbsp; <b>Latest scan referenced:</b> 2026-05-08</div>
+</header>
+
+<div class="toc">
+  <div class="title">On this page</div>
+  <ol>
+    <li><a href="#today">Today's headline call</a></li>
+    <li><a href="#zombie">The Zombie Shell scan (front and center)</a></li>
+    <li><a href="#barrels">Other barrels running — what each one hunts</a></li>
+    <li><a href="#feedback">How to send Mike ideas / pushback</a></li>
+    <li><a href="#how">How this page works under the hood</a></li>
+  </ol>
+</div>
+
+<h2 id="today">1. Today's headline call</h2>
+
+<div class="callout info"><h3>Read this first</h3><ol class="clean">
+<li><b>PHOE — Phoenix Asia Holdings</b> is the marquee event today: HK construction subcontractor announced $1B reverse-merger-style acquisition of ACEA Pharma (Scilex SCLX subsidiary). +94% pre-mkt to $37.07. <b>DO NOT CHASE</b> — math says deal-implied value is ~$10/share post-close (existing holders diluted to ~18%). Watch for pullback toward $15-$20.</li>
+<li><b>SOBR copycat window is still live</b> — SOBR Safe re-popped to $1.80 (+74.76%) yesterday on continued Clean World Ventures merger excitement. Two <span class="pill tradable">TRADABLE</span> pivots filed in this window: PHOE (Nasdaq, pharma) and ATVK→GlobalTek (OTC, <span class="pill restricted">RESTRICTED</span>, solid-state batteries pivot).</li>
+<li><b>No fresh AI-rebrand <span class="pill tradable">TRADABLE</span> shells</b> since 5/6 briefing's CCTC/AIFC. Pattern is alive in OTC-land but blocked at Schwab.</li>
+<li><b>AIIO Robo.ai</b> +61% pre-mkt is a sub-$5 <span class="pill restricted">RESTRICTED</span> float game with active dilution (14.76M Class B re-registration filed 5/7).</li>
+<li><b>Top forcing-function explanation</b>: every sub-$250M pre-mkt mover above is sourced — no "unknown" drivers.</li>
+</ol></div>
+
+<h2 id="zombie">2. The Zombie Shell scan</h2>
+
+<h3>HOT CANDIDATES</h3>
+
+<p><b>None in the buyable window for Mike's account.</b></p>
+<p>PHOE is the loudest name but the deal economics make it a chase, not a buy. The only way it works is if it pulls back to ~$15-20 and Mike is comfortable with 100M dilution shares hitting late Q2. Even then, it's a pre-merger speculation on the <i>clinical-stage pharma assets</i>, which are unproven. Skip.</p>
+
+<h3>PRE-ANNOUNCEMENT WATCH</h3>
+
+<h3>PHOE — Phoenix Asia Holdings (NASDAQ-CM)</h3>
+<ul class="clean">
+<li><b>Pre-mkt:</b> $37.07 (+94.49%) — secondary close $19.06 (-33.36%)</li>
+<li><b>Cap:</b> ~$411M pre-deal; pro-forma ~$4.5B at $37 post-merger which is wildly above implied $10 deal value</li>
+<li><b>Filing:</b> 8-K (6-K technically as foreign issuer) + Scilex SCLX press release 05/05/2026</li>
+<li><b>Catalyst:</b> Phoenix Asia (HK substructure works contractor) issuing 100M new ordinary shares ($1B at $10 each) to acquire 100% of ACEA Pharma from Scilex subsidiary ACEA Therapeutics. ACEA Pharma is a clinical-stage onc/autoimmune/COVID-19 pipeline. Plus a $20M interest-free convertible promissory note to Phoenix Prosperity (controlling stockholder) — DILUTION RED FLAG.</li>
+<li><b>Post-close:</b> Phoenix renames to ACEA Pharma, Inc. ACEA Therapeutics owns ~82% of Go-Forward Co; existing PHOE holders diluted to ~18%.</li>
+<li><b>52-week range:</b> $2.73 – $133.12 — extreme volatility profile.</li>
+<li><b>Tradability:</b> <b><code><span class="pill tradable">TRADABLE</span></code></b> (Nasdaq-CM, &gt;$5).</li>
+<li><b>Risk Check (4-line):</b> (1) Reward — 5x+ if market re-rates ACEA at $5B post-close (unrealistic). (2) Risk — 75%+ drawdown to deal-implied $10 once dilution is priced in. (3) Catalyst — Q2 close, HSR + Nasdaq approval. (4) Sizing — would be a max $300 lottery ticket if entry hits $15-18 zone, NOT today.</li>
+<li><b>Verdict:</b> WATCH for violent pullback toward $15-$20. Do not chase a +94% pre-mkt move on a deal that mathematically prices the stock at $10.</li>
+</ul>
+<h3>ATVK — GlobalTek Ventures (formerly Ameritek Ventures), OTC Pink</h3>
+<ul class="clean">
+<li><b>Filing:</b> 8-K filed 05/06/2026 with Items 5.03, 8.01, 9.01 — Nevada Certificate of Amendment effective 04/17/2026</li>
+<li><b>Pivot narrative:</b> Solid-state batteries (Galaxy Batteries, Inc. subsidiary), adaptive/robotic manufacturing, aerospace services (AeroPass, Inc.), luxury corporate housing — kitchen-sink pivot pitched by Shaun Passley (sole officer: Chairman, Pres, CEO, CFO, COO, Sec)</li>
+<li><b>Last quote:</b> ~$0.0114 (per OTC data)</li>
+<li><b>Cap:</b> Likely &lt;$10M</li>
+<li><b>Tradability:</b> <b><code><span class="pill restricted">RESTRICTED</span></code></b> — OTC Pink, sub-$5, sub-penny actually. Schwab IRA blocks. Phone-in to 1-866-855-5635 if Mike wants to get cute, but the price is so low and the entity so kitchen-sink that it's not worth it.</li>
+<li><b>Verdict:</b> Note for the watch list. The Nevada-amendment + AI/robotics/solid-state narrative is exactly the SOBR-window copycat structural signal — but the issuer is too small and grungy to be tradable.</li>
+</ul>
+<h3>Other 8-K Items 5.03 from sub-$100M issuers (non-pivot, mechanical):</h3>
+<ul class="clean">
+<li><b>SDOT — Sadot Group</b> (Nasdaq) — 1-for-10 reverse stock split 8-K. Bid-price compliance, not a pivot. Skip.</li>
+<li><b>BNZI — Banzai International</b> (Nasdaq) — 1-for-20 reverse split effective 5/8 open. Compliance, not pivot. Skip.</li>
+<li><b>OLOX — Olenox Industries</b> (Nasdaq) — 1-for-10 reverse split effective 5/8. Compliance, not pivot. Skip.</li>
+<li><b>KALA — Kala Bio</b> (Nasdaq) — Items 3.03, 5.03, 8.01 — likely reverse split / charter shuffle. Skip until further confirmation.</li>
+</ul>
+
+<h3>COPYCAT WINDOW ALERT</h3>
+
+<p><b>Anchor recap:</b> SOBR Safe re-popped to <b>$1.80 (+74.76%) on 05/07</b> on continuing Clean World Ventures merger excitement (CWV holders to own 98.3% post-close). Pre-mkt today: $1.74 (-3% — very mild profit-take). The pop has stretched the copycat window: filings made between 04/30 and 05/15 in sub-$50M issuers get attention.</p>
+<p><b>Copycats filed in the SOBR window (04/30–05/08):</b></p>
+<table><thead><tr><th>Ticker</th><th>Filing Date</th><th>Type</th><th>Cap</th><th>Tradability</th><th>Note</th></tr></thead><tbody>
+<tr><td><b>CCTC → LataMed AI</b></td><td>05/04</td><td>NV charter, AI rebrand</td><td>&lt;$50M</td><td><code><span class="pill restricted">RESTRICTED</span></code></td><td>OTC, sub-$5</td></tr>
+<tr><td><b>AIFC ← ALT5 Sigma</b></td><td>05/01</td><td>NV short-form merger, AI</td><td>&lt;$50M</td><td><code><span class="pill restricted">RESTRICTED</span></code></td><td>sub-$5</td></tr>
+<tr><td><b>ATVK → GlobalTek</b></td><td>05/06</td><td>NV charter, multi-pivot</td><td>&lt;$10M</td><td><code><span class="pill restricted">RESTRICTED</span></code></td><td>OTC Pink, sub-penny</td></tr>
+<tr><td><b>PHOE → ACEA Pharma</b></td><td>05/05 (PR) / 5/4 SAA</td><td>$1B reverse-merger pivot</td><td>$411M pre-deal</td><td><code><span class="pill tradable">TRADABLE</span></code></td><td>Nasdaq, &gt;$5 — but chase risk</td></tr>
+</tbody></table>
+<p><b>Pattern verdict:</b> The SOBR window is producing copycats. PHOE is the FIRST tradable name in the window, but the deal economics (existing holders diluted to ~18%) make it a chase, not a clean buy. The OTC names continue to be blocked by Schwab restrictions. Keep scanning EDGAR through 5/15 for a <span class="pill tradable">TRADABLE</span> name with cleaner deal economics.</p>
+
+<h3>PRE-MARKET GAINERS</h3>
+
+<p>Pre-market 05/08 (08:09 AM ET) — every sub-$250M name with a material move, with a forced explanation:</p>
+<table><thead><tr><th>#</th><th>Ticker</th><th>Name</th><th>%</th><th>Premkt $</th><th>Cap</th><th>Vol</th><th>Driver</th><th>Tradability</th></tr></thead><tbody>
+<tr><td>2</td><td>AIIO</td><td>Robo.ai</td><td>+60.5%</td><td>$0.95</td><td>$10.9M</td><td>55.3M</td><td>Pure float squeeze; co. is "out of compliance" w/ Nasdaq, filed 14.76M Class B share resale prospectus 5/7 (DILUTION). Smart mobility / robotics narrative.</td><td><code><span class="pill restricted">RESTRICTED</span></code></td></tr>
+<tr><td>3</td><td>GDC</td><td>GD Culture Group</td><td>+53.6%</td><td>$0.23</td><td>$9.2M</td><td>191.5M</td><td>Special committee formed to evaluate non-binding $10.75/share take-private bid from Wealthy Concord + East Valley Tech (announced 5/1). $0.23 vs $10.75 bid = 4,500% spread = market thinks bid is fake/scam. AI-driven digital human company.</td><td><code><span class="pill restricted">RESTRICTED</span></code></td></tr>
+<tr><td>5</td><td>TRAW</td><td>Traws Pharma</td><td>+36.5%</td><td>$2.32</td><td>$17.3M</td><td>24.3M</td><td>Below 50% threshold — biotech catalyst, not a pivot. Sub-$5 <span class="pill restricted">RESTRICTED</span>.</td><td><code><span class="pill restricted">RESTRICTED</span></code></td></tr>
+<tr><td>9</td><td>MASK</td><td>3 E Network Tech</td><td>+18.1%</td><td>$2.93</td><td>$2.7M</td><td>2.6M</td><td>Nano-cap float squeeze, no specific catalyst.</td><td><code><span class="pill restricted">RESTRICTED</span></code></td></tr>
+<tr><td>10</td><td>CTM</td><td>Castellum</td><td>+18.0%</td><td>$0.77</td><td>$62M</td><td>10.0M</td><td>Defense IT services micro-cap, no specific catalyst found.</td><td><code><span class="pill restricted">RESTRICTED</span></code></td></tr>
+<tr><td>13</td><td>REFR</td><td>Research Frontiers</td><td>+14.0%</td><td>$0.95</td><td>$28.9M</td><td>1.7K</td><td>Smart-glass licensor, low-volume drift.</td><td><code><span class="pill restricted">RESTRICTED</span></code></td></tr>
+<tr><td>17</td><td>KRKR</td><td>36Kr Holdings</td><td>+12.6%</td><td>$4.20</td><td>$7.4M</td><td>5.2K</td><td>Chinese ADR, no fresh catalyst.</td><td><code><span class="pill restricted">RESTRICTED</span></code></td></tr>
+<tr><td>18</td><td>TC</td><td>Token Cat Limited</td><td>+12.6%</td><td>$10.75</td><td>$207M</td><td>6.3K</td><td>Chinese ADR. &lt;50% so not forcing.</td><td><code><span class="pill tradable">TRADABLE</span></code></td></tr>
+<tr><td>19</td><td>WGRX</td><td>Wellgistics Health</td><td>+12.0%</td><td>$0.099</td><td>$11.1M</td><td>270K</td><td>Sub-penny float squeeze.</td><td><code><span class="pill restricted">RESTRICTED</span></code></td></tr>
+</tbody></table>
+<p><b>Above $250M but &gt;50% (forcing-function explanation required):</b></p>
+<table><thead><tr><th>#</th><th>Ticker</th><th>Name</th><th>%</th><th>Premkt $</th><th>Cap</th><th>Driver</th></tr></thead><tbody>
+<tr><td>1</td><td><b>PHOE</b></td><td>Phoenix Asia Holdings</td><td><b>+94.5%</b></td><td>$37.07</td><td>$411M</td><td>$1B reverse-merger pivot to pharma (ACEA Pharma from Scilex). See PRE-ANNOUNCEMENT WATCH above.</td></tr>
+<tr><td>4</td><td>INOD</td><td>Innodata</td><td>+44.6%</td><td>$66</td><td>$1.49B</td><td>Q1 2026 record earnings: rev $90.1M (+54% YoY, beat consensus by 18%), Adj EBITDA $25M (beat by 139%), raised FY guidance to ≥40% growth, $51M new Big Tech engagement disclosed. Real catalyst, not zombie.</td></tr>
+<tr><td>6</td><td>FLNC</td><td>Fluence Energy</td><td>+24.7%</td><td>$23.65</td><td>$3.5B</td><td>Earnings/data center storage news — large cap, not zombie.</td></tr>
+<tr><td>7</td><td>AKAM</td><td>Akamai Tech</td><td>+22.5%</td><td>$142.91</td><td>$17.2B</td><td>Earnings beat — large cap, not zombie.</td></tr>
+</tbody></table>
+<p><b>All other sub-$250M premkt names below 50% threshold and with no rebrand/8-K driver are float-squeeze noise.</b></p>
+
+<h3>SECTOR TREND UPDATE</h3>
+
+<ol class="clean">
+<li><b>First <span class="pill tradable">TRADABLE</span> pivot in the SOBR window — PHOE.</b> Hong Kong issuer pivoting to pharma is not a classic "AI rebrand" but it IS a reverse-merger-style transformation. The deal structure (100M new shares, controlling SH gets $20M convertible note, 82% dilution) reads like a vintage SPAC-y reverse-merger. <b>Test of the trade:</b> does PHOE pull back to deal-implied $10-15 zone? If so, that's the buy. Today is the wrong end.</li>
+</ol>
+<ol class="clean">
+<li><b>Bitcoin-miner-to-AI/HPC theme keeps consolidating with the majors</b> (IREN $1.94B Microsoft deal, MARA Starwood, Hut 8 $7B Google-backed). No micro-cap miner pivots filed today, but the macro thesis ($70B+ AI/HPC contracts inked across the sector, 85% margins vs. mining unprofitable at $80K BTC cash cost) means any small miner that announces an HPC contract gets repriced 2x+. Watch CIFR, BTBT, IREN, RIOT for follow-on news.</li>
+</ol>
+<ol class="clean">
+<li><b>GDC special-committee setup is dangerous.</b> $10.75 take-private offer vs $0.23 trading is the kind of spread that shows up in shell-game reverse-mergers from PRC-affiliated holding cos. The bidders (Wealthy Concord + East Valley Tech) have no obvious history. Could be a genuine going-private at deep discount, or a pump setup. <span class="pill restricted">RESTRICTED</span> anyway.</li>
+</ol>
+<ol class="clean">
+<li><b>AIIO Robo.ai is actively diluting.</b> 14.76M Class B share resale prospectus filed 5/7 — these will hit the market soon. The +61% pre-mkt squeeze will reverse. Don't get pulled in.</li>
+</ol>
+<ol class="clean">
+<li><b>Reverse-split bin filling up</b> — SDOT, BNZI, OLOX all effecting reverse splits this week to maintain Nasdaq compliance. None are pivots; they're life support. Track for delisting risk, not opportunity.</li>
+</ol>
+
+<h3>MISSES</h3>
+
+<ul class="clean">
+<li><b>EKSO Bionics 8-K/A 5/5</b> — appears in 8-K screen with Items 1.01/2.01/3.02/3.03/4.01/5.01/5.02/5.03/9.01 but it's the ChronoScale spinoff completion already covered in the 5/6 briefing. Not new.</li>
+<li><b>SDOT, BNZI, OLOX, KALA, TCMD, KGS, INSP, CVNA, DVN</b> — all 5.03 charter amendments are routine governance / reverse-split / annual-meeting bylaws. Not pivots.</li>
+<li><b>CTOR Citius Oncology 8-K</b> — financing event (Loan &amp; Security Agreement), not pivot.</li>
+<li><b>SCLX Scilex Holding 8-K 5/5</b> — Scilex IS the SELLER in the PHOE/ACEA deal, not a pivot itself. Scilex retains 82% indirect ownership of Go-Forward Co via ACEA Therapeutics.</li>
+<li><b>Theriva Biologics, Arcturus Therapeutics</b> — biotech earnings/financing, not pivots.</li>
+</ul>
+
+<h2 id="barrels">3. Other barrels running — what each one hunts</h2>
+
+<p class="sub">The Zombie Shell scan is one of several running daily. Each "barrel" hunts a different repeatable pattern. Click an opt-in below and the next morning's email will include that scan's output too.</p>
+
+<div class="barrel">
+  <div class="header-row">
+    <span class="tag live">LIVE — TRADES FILLED</span>
+    <h3>Barrel 4 — DPA §303 / Reshoring</h3>
+  </div>
+  <div class="meta">Created 2026-04-30 on Trump DPA §303 invocations</div>
+  <p>Hunts public companies that are <b>prime contractors</b> on Defense Production Act §303 awards &gt;$50M for strategic-materials reshoring (rare earths, critical minerals, advanced manufacturing). The thesis: a §303 invocation is a forced government buyer with guaranteed offtake. The contract is the moat.</p>
+  <p><b>Current positions:</b> MTZ (3 sh) and ETN (2 sh) filled. MP Materials / REMX pending this week pending tape confirmation.</p>
+  <p><b>Why it matters:</b> defense-policy contracts are the cleanest "guaranteed customer" signal in public markets. Win rate is small but the catalysts are dated and the cash flows are real.</p>
+  <div class="optin">
+    Want this in your daily? &rarr; <a href="https://github.com/fructifyme/ai-pivot-explainer/issues/new?template=opt-in-scan.yml&title=Opt-in:+Barrel+4+DPA+Reshoring&labels=opt-in,jim&body=Add+Barrel+4+(DPA+%C2%A7303+Reshoring)+to+my+daily+briefing.">Opt in via GitHub Issue</a>
+  </div>
+</div>
+
+<div class="barrel">
+  <div class="header-row">
+    <span class="tag live">LIVE — POSITIONS HELD</span>
+    <h3>London Bridge Strategy</h3>
+  </div>
+  <div class="meta">Thesis built 2026-04-17, sized 2026-04-22</div>
+  <p>A four-leg trade on the macro thesis that the LBMA→COMEX gold repricing, a weakening dollar, and a Bitcoin reserve narrative all converge. Holdings: <b>IBIT 70 sh</b> + <b>FCX 30 sh</b> + <b>CME 7 sh</b> on Schwab (~$7,075), plus <b>~$2,168 direct BTC on Robinhood</b>.</p>
+  <p>The "bridge" is London → New York: assets that get repriced when London opens before COMEX. Monthly audit every first of the month checks whether the thesis components are still intact (gold-silver ratio, DXY behavior, BTC dominance, COMEX warehouse stocks).</p>
+  <div class="optin">
+    Want the monthly audit in your briefing? &rarr; <a href="https://github.com/fructifyme/ai-pivot-explainer/issues/new?template=opt-in-scan.yml&title=Opt-in:+London+Bridge&labels=opt-in,jim&body=Add+London+Bridge+monthly+audit+to+my+briefing.">Opt in via GitHub Issue</a>
+  </div>
+</div>
+
+<div class="barrel">
+  <div class="header-row">
+    <span class="tag live">LIVE — BASKET HELD</span>
+    <h3>Psychedelics Basket</h3>
+  </div>
+  <div class="meta">Filled 2026-04-20 on Trump Executive Order</div>
+  <p>A small basket sized on the executive-order catalyst: <b>ATAI 1000 sh</b> + <b>CMPS 500 sh</b> + <b>PSIL 65 sh</b> (~$10,966 total). Clinical-stage psychedelic-medicine companies, all small-cap, all sensitive to policy headlines. Held as a thematic option, not a high-conviction stake.</p>
+  <p><b>What we're watching:</b> FDA path-to-approval announcements (MAPS/MDMA NDA refiling), state-level decriminalization momentum, basket vol vs. broader biotech XBI.</p>
+  <div class="optin">
+    Want basket updates in the briefing? &rarr; <a href="https://github.com/fructifyme/ai-pivot-explainer/issues/new?template=opt-in-scan.yml&title=Opt-in:+Psychedelics+Basket&labels=opt-in,jim&body=Add+Psychedelics+basket+updates+to+my+briefing.">Opt in via GitHub Issue</a>
+  </div>
+</div>
+
+<div class="barrel">
+  <div class="header-row">
+    <span class="tag armed">ARMED — DAILY EVENT WATCH</span>
+    <h3>Earnings Calendar Watch</h3>
+  </div>
+  <div class="meta">NASDAQ earnings-calendar API, 21-day forward window</div>
+  <p>Every morning the scanner pulls earnings dates for every name currently in Mike's portfolio across the next 21 days. This isn't a hunt — it's a discipline. The rule is simple: don't get caught in an earnings print on a position sized for a slow thesis. Either trim into it, hedge, or pre-decide a hold-through.</p>
+  <p>It exists because earnings have snuck up on the book before. Now the calendar surfaces in the morning briefing automatically.</p>
+  <div class="optin">
+    Want the upcoming-earnings list in your daily? &rarr; <a href="https://github.com/fructifyme/ai-pivot-explainer/issues/new?template=opt-in-scan.yml&title=Opt-in:+Earnings+Watch&labels=opt-in,jim&body=Add+upcoming+earnings+calendar+to+my+briefing.">Opt in via GitHub Issue</a>
+  </div>
+</div>
+
+<div class="barrel">
+  <div class="header-row">
+    <span class="tag armed">ARMED — EVENT TRIGGERED</span>
+    <h3>Policy Contracts Monitor (All Primes &gt;$50M)</h3>
+  </div>
+  <div class="meta">Spec: .skills/stock-analyst/references/policy-contracts-monitor-spec.md</div>
+  <p>Broader than Barrel 4. This scan flags <i>every</i> &gt;$50M federal contract award to a publicly-traded prime contractor — not just DPA §303 reshoring. Defense, infrastructure, energy, anything where Uncle Sam writes a check above the threshold. The reasoning: contract awards are the "follow the money" signal, and filtering to a single thesis (Barrel 4) leaves money on the table.</p>
+  <div class="optin">
+    Want every &gt;$50M prime award in your briefing? &rarr; <a href="https://github.com/fructifyme/ai-pivot-explainer/issues/new?template=opt-in-scan.yml&title=Opt-in:+Policy+Contracts+All-Primes&labels=opt-in,jim&body=Add+the+all-primes+%3E%2450M+policy-contracts+scan+to+my+briefing.">Opt in via GitHub Issue</a>
+  </div>
+</div>
+
+<h2 id="feedback">4. How to send Mike ideas / pushback</h2>
+
+<p class="sub">Three pre-built feedback channels, each opens a structured GitHub Issue with the right template. Mike sees every issue in his repo inbox and triages them into the daily process. You'll need a free github.com account — anonymous filing isn't supported.</p>
+
+<div class="feedback">
+  <a href="https://github.com/fructifyme/ai-pivot-explainer/issues/new?template=ticker-idea.yml">
+    <div class="label">Channel 01</div>
+    <div class="title">Ticker idea</div>
+    <div class="desc">"I think Mike should look at &lt;ticker&gt; because…" — name, thesis in one paragraph, what catalyst or filing pulled your attention.</div>
+  </a>
+  <a href="https://github.com/fructifyme/ai-pivot-explainer/issues/new?template=scan-suggestion.yml">
+    <div class="label">Channel 02</div>
+    <div class="title">Scan suggestion</div>
+    <div class="desc">A new "barrel" you think we should run. The repeatable pattern, the data source, the kind of signal it would surface.</div>
+  </a>
+  <a href="https://github.com/fructifyme/ai-pivot-explainer/issues/new?template=question.yml">
+    <div class="label">Channel 03</div>
+    <div class="title">Question for Mike</div>
+    <div class="desc">"Why are you doing X instead of Y?" — clarifying questions, methodological pushback, anything that doesn't fit the other two buckets.</div>
+  </a>
+</div>
+
+<h2 id="how">5. How this page works under the hood</h2>
+
+<p>This isn't a static page someone manually edits. The flow:</p>
+
+<ol class="clean">
+  <li>Overnight, an automated job runs each barrel's scan (EDGAR full-text 8-K search, NASDAQ pre-mkt API, federal contract feeds, the SOBR-anchored copycat window).</li>
+  <li>A Python script (<code>scripts/refresh_jim_briefing.py</code>) takes the morning's outputs, the active briefing markdown, and the current portfolio CSV, and regenerates this HTML using a Jinja-style template.</li>
+  <li>The script commits the new <code>jim/index.html</code> to this repo and pushes. GitHub Pages rebuilds in ~30 seconds.</li>
+  <li>A short email goes to Jim with the headline + a link to this page. Email arrives between 7:30–8:00 AM ET on trading days.</li>
+  <li>If Jim files a GitHub Issue (ticker, scan, or question), it lands in Mike's inbox and gets triaged into the next morning's briefing process.</li>
+</ol>
+
+<p>The architecture is intentional. Briefings live as markdown in a private workspace; only the cleaned, public-safe narrative gets published here. No portfolio dollar amounts beyond what's in the document above, no account numbers, no PII.</p>
+
+<div class="footer">
+  <div><b>Compiled:</b> 2026-05-11 — based on internal daily zombie-shell briefing dated 2026-05-08. Sources: SEC EDGAR full-text 8-K search, NASDAQ live quotes API, public news coverage of Phoenix Asia Holdings (PHOE), SOBR Safe / Clean World Ventures, Scilex (SCLX) / ACEA Pharma, GD Culture Group, Robo.ai, and the broader 2026 zombie-shell cohort.</div>
+  <div class="disclaimer"><b>Not investment advice.</b> Pivot trades and small-cap policy plays carry extreme risk, including total loss of capital. Several historical examples cited in the parent <a href="../">AI-Pivot Explainer</a> ended in SEC fraud enforcement. Position size as if you may lose 100% of any speculative trade. Nothing here is a recommendation to buy or sell any security. Jim is a recipient, not a client — Mike is not acting as an investment advisor.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+name: Scan suggestion
+description: Propose a new "barrel" — a repeatable pattern Mike's scanners should hunt
+title: "[Scan] <short name of the pattern>"
+labels: ["scan-suggestion", "jim"]
+body:
+  - type: textarea
+    id: pattern
+    attributes:
+      label: The repeatable pattern
+      description: What's the signal? Describe it like an engineer — inputs, conditions, outputs.
+      placeholder: "When a public company files 8-K Item 1.01 referencing <X>, and market cap < $___, and float < ___ shares, that's historically led to..."
+    validations:
+      required: true
+  - type: textarea
+    id: data_source
+    attributes:
+      label: Where the data comes from
+      description: SEC EDGAR? NASDAQ API? A specific government feed? A Twitter list?
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: Historical examples
+      description: Two or three names where this pattern fired and what happened next.
+      placeholder: "RIOT 2017 — was a beverage co., pivoted to BTC mining, +1,500%. NKLA 2020 — fake truck, +800% then to jail. ..."
+  - type: dropdown
+    id: cadence
+    attributes:
+      label: Cadence
+      options:
+        - "Daily pre-market"
+        - "Weekly digest"
+        - "Event-driven (only when a filing/announcement hits)"
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: Risks, false-positive modes, related scans we already run.

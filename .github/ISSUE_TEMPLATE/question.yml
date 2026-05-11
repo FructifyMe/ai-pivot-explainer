@@ -1,0 +1,27 @@
+name: Question for Mike
+description: Ask Mike anything about the strategy, the trades, the methodology, the scanners
+title: "[Q] <one-line question>"
+labels: ["question", "jim"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: The question
+      description: Be specific. "Why didn't you take MP Materials on 5/9 when the DPA award hit?" beats "what's your process?"
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context / what you already know
+      description: What you've already read or watched that prompted the question. Saves Mike from re-explaining.
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: How urgent
+      options:
+        - "Curious — answer when you can"
+        - "Would help me before I file my next ticker idea"
+        - "Time-sensitive — there's a setup I'm watching"
+    validations:
+      required: true

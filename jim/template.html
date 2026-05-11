@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Jim's Briefing — Daily Pivot & Policy Scan</title>
+<style>
+  :root{
+    --bg:#0e1014; --panel:#151922; --panel2:#1c2330; --line:#2a3140;
+    --text:#e8ecf2; --muted:#8a93a4; --accent:#4ade80; --accent2:#60a5fa;
+    --warn:#f59e0b; --bad:#ef4444; --pink:#f472b6;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent2)}
+  .wrap{max-width:920px;margin:0 auto;padding:48px 24px 80px}
+  header{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:36px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;margin-bottom:14px}
+  h1{font-size:36px;line-height:1.15;margin:0 0 14px;letter-spacing:-0.02em}
+  h2{font-size:22px;margin:44px 0 14px;letter-spacing:-0.01em;border-top:1px solid var(--line);padding-top:32px}
+  h2:first-of-type{border-top:none;padding-top:0}
+  h3{font-size:17px;margin:22px 0 8px}
+  p{margin:10px 0}
+  .sub{color:var(--muted);font-size:16px;max-width:760px}
+  .datebar{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:6px}
+  .datebar b{color:var(--text)}
+  .callout{background:linear-gradient(135deg,#1c2330 0%, #1a1f2b 100%);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:18px 22px;margin:20px 0}
+  .callout.warn{border-left-color:var(--warn)}
+  .callout.bad{border-left-color:var(--bad);background:#221a18;border-color:#4a2a22}
+  .callout.info{border-left-color:var(--accent2)}
+  .callout h3{margin-top:0}
+  .callout.warn h3{color:var(--warn)}
+  .callout.bad h3{color:var(--bad)}
+  .callout.info h3{color:var(--accent2)}
+  .barrel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px 22px;margin:14px 0}
+  .barrel .header-row{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+  .barrel .tag{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent);background:rgba(74,222,128,.1);padding:2px 10px;border-radius:99px;letter-spacing:.05em}
+  .barrel .tag.live{color:var(--accent);background:rgba(74,222,128,.12)}
+  .barrel .tag.armed{color:var(--accent2);background:rgba(96,165,250,.12)}
+  .barrel .tag.watch{color:var(--warn);background:rgba(245,158,11,.14)}
+  .barrel h3{margin:0;font-size:18px}
+  .barrel .meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:2px}
+  .barrel .row{display:grid;grid-template-columns:130px 1fr;gap:12px;margin:10px 0;font-size:14.5px}
+  .barrel .row .key{color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding-top:2px}
+  .barrel .optin{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);font-size:13.5px}
+  .barrel .optin a{display:inline-block;background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.3);color:var(--accent2);padding:6px 14px;border-radius:6px;text-decoration:none;font-family:var(--mono);font-size:12px;letter-spacing:.03em}
+  .barrel .optin a:hover{background:rgba(96,165,250,.18)}
+  @media (max-width:680px){
+    .barrel .row{grid-template-columns:1fr;gap:4px}
+  }
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;font-weight:600}
+  td.num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+  td .ticker{font-family:var(--mono);font-weight:700;color:var(--accent2)}
+  .pill{display:inline-block;font-family:var(--mono);font-size:10.5px;padding:1px 8px;border-radius:99px;letter-spacing:.05em}
+  .pill.tradable{color:var(--accent);background:rgba(74,222,128,.12)}
+  .pill.restricted{color:var(--warn);background:rgba(245,158,11,.14)}
+  ol.clean,ul.clean{padding-left:22px}
+  ol.clean li,ul.clean li{margin:6px 0}
+  .feedback{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:18px 0}
+  .feedback a{display:block;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;text-decoration:none;color:var(--text);transition:border-color .15s}
+  .feedback a:hover{border-color:var(--accent2)}
+  .feedback .label{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase}
+  .feedback .title{font-size:16px;font-weight:600;margin:6px 0 4px}
+  .feedback .desc{font-size:13px;color:var(--muted);line-height:1.45}
+  @media (max-width:680px){.feedback{grid-template-columns:1fr}}
+  .footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);line-height:1.55}
+  .footer .disclaimer{margin-top:16px;padding:14px 16px;background:#221a18;border:1px solid #4a2a22;border-radius:8px;color:#f1c9b8}
+  .toc{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:22px 0;font-size:14px}
+  .toc .title{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}
+  .toc ol{padding-left:22px;margin:0}
+  .toc li{margin:4px 0}
+  .toc a{color:var(--text);text-decoration:none}
+  .toc a:hover{color:var(--accent2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Jim's Briefing — Daily</div>
+  <h1>What the scanners caught this morning.</h1>
+  <p class="sub">Mike's daily pivot &amp; policy scan, rebuilt each morning. Plain conviction, no hedging. Built for engineers — meaning: every claim has a number behind it.</p>
+  <div class="datebar"><b>Edition:</b> {{EDITION_DATE}} &nbsp;·&nbsp; <b>Refreshed:</b> {{REFRESH_TIME}} &nbsp;·&nbsp; <b>Latest scan referenced:</b> {{SCAN_DATE}}</div>
+</header>
+
+<div class="toc">
+  <div class="title">On this page</div>
+  <ol>
+    <li><a href="#today">Today's headline call</a></li>
+    <li><a href="#zombie">The Zombie Shell scan (front and center)</a></li>
+    <li><a href="#barrels">Other barrels running — what each one hunts</a></li>
+    <li><a href="#feedback">How to send Mike ideas / pushback</a></li>
+    <li><a href="#how">How this page works under the hood</a></li>
+  </ol>
+</div>
+
+<h2 id="today">1. Today's headline call</h2>
+
+{{HEADLINE_HTML}}
+
+<h2 id="zombie">2. The Zombie Shell scan</h2>
+
+{{SCAN_BODY_HTML}}
+
+<h2 id="barrels">3. Other barrels running — what each one hunts</h2>
+
+<p class="sub">The Zombie Shell scan is one of several running daily. Each "barrel" hunts a different repeatable pattern. Click an opt-in below and the next morning's email will include that scan's output too.</p>
+
+<div class="barrel">
+  <div class="header-row">
+    <span class="tag live">LIVE — TRADES FILLED</span>
+    <h3>Barrel 4 — DPA §303 / Reshoring</h3>
+  </div>
+  <div class="meta">Created 2026-04-30 on Trump DPA §303 invocations</div>
+  <p>Hunts public companies that are <b>prime contractors</b> on Defense Production Act §303 awards &gt;$50M for strategic-materials reshoring (rare earths, critical minerals, advanced manufacturing). The thesis: a §303 invocation is a forced government buyer with guaranteed offtake. The contract is the moat.</p>
+  <p><b>Current positions:</b> MTZ (3 sh) and ETN (2 sh) filled. MP Materials / REMX pending this week pending tape confirmation.</p>
+  <p><b>Why it matters:</b> defense-policy contracts are the cleanest "guaranteed customer" signal in public markets. Win rate is small but the catalysts are dated and the cash flows are real.</p>
+  <div class="optin">
+    Want this in your daily? &rarr; <a href="https://github.com/fructifyme/ai-pivot-explainer/issues/new?template=opt-in-scan.yml&title=Opt-in:+Barrel+4+DPA+Reshoring&labels=opt-in,jim&body=Add+Barrel+4+(DPA+%C2%A7303+Reshoring)+to+my+daily+briefing.">Opt in via GitHub Issue</a>
+  </div>
+</div>
+
+<div class="barrel">
+  <div class="header-row">
+    <span class="tag live">LIVE — POSITIONS HELD</span>
+    <h3>London Bridge Strategy</h3>
+  </div>
+  <div class="meta">Thesis built 2026-04-17, sized 2026-04-22</div>
+  <p>A four-leg trade on the macro thesis that the LBMA→COMEX gold repricing, a weakening dollar, and a Bitcoin reserve narrative all converge. Holdings: <b>IBIT 70 sh</b> + <b>FCX 30 sh</b> + <b>CME 7 sh</b> on Schwab (~$7,075), plus <b>~$2,168 direct BTC on Robinhood</b>.</p>
+  <p>The "bridge" is London → New York: assets that get repriced when London opens before COMEX. Monthly audit every first of the month checks whether the thesis components are still intact (gold-silver ratio, DXY behavior, BTC dominance, COMEX warehouse stocks).</p>
+  <div class="optin">
+    Want the monthly audit in your briefing? &rarr; <a href="https://github.com/fructifyme/ai-pivot-explainer/issues/new?template=opt-in-scan.yml&title=Opt-in:+London+Bridge&labels=opt-in,jim&body=Add+London+Bridge+monthly+audit+to+my+briefing.">Opt in via GitHub Issue</a>
+  </div>
+</div>
+
+<div class="barrel">
+  <div class="header-row">
+    <span class="tag live">LIVE — BASKET HELD</span>
+    <h3>Psychedelics Basket</h3>
+  </div>
+  <div class="meta">Filled 2026-04-20 on Trump Executive Order</div>
+  <p>A small basket sized on the executive-order catalyst: <b>ATAI 1000 sh</b> + <b>CMPS 500 sh</b> + <b>PSIL 65 sh</b> (~$10,966 total). Clinical-stage psychedelic-medicine companies, all small-cap, all sensitive to policy headlines. Held as a thematic option, not a high-conviction stake.</p>
+  <p><b>What we're watching:</b> FDA path-to-approval announcements (MAPS/MDMA NDA refiling), state-level decriminalization momentum, basket vol vs. broader biotech XBI.</p>
+  <div class="optin">
+    Want basket updates in the briefing? &rarr; <a href="https://github.com/fructifyme/ai-pivot-explainer/issues/new?template=opt-in-scan.yml&title=Opt-in:+Psychedelics+Basket&labels=opt-in,jim&body=Add+Psychedelics+basket+updates+to+my+briefing.">Opt in via GitHub Issue</a>
+  </div>
+</div>
+
+<div class="barrel">
+  <div class="header-row">
+    <span class="tag armed">ARMED — DAILY EVENT WATCH</span>
+    <h3>Earnings Calendar Watch</h3>
+  </div>
+  <div class="meta">NASDAQ earnings-calendar API, 21-day forward window</div>
+  <p>Every morning the scanner pulls earnings dates for every name currently in Mike's portfolio across the next 21 days. This isn't a hunt — it's a discipline. The rule is simple: don't get caught in an earnings print on a position sized for a slow thesis. Either trim into it, hedge, or pre-decide a hold-through.</p>
+  <p>It exists because earnings have snuck up on the book before. Now the calendar surfaces in the morning briefing automatically.</p>
+  <div class="optin">
+    Want the upcoming-earnings list in your daily? &rarr; <a href="https://github.com/fructifyme/ai-pivot-explainer/issues/new?template=opt-in-scan.yml&title=Opt-in:+Earnings+Watch&labels=opt-in,jim&body=Add+upcoming+earnings+calendar+to+my+briefing.">Opt in via GitHub Issue</a>
+  </div>
+</div>
+
+<div class="barrel">
+  <div class="header-row">
+    <span class="tag armed">ARMED — EVENT TRIGGERED</span>
+    <h3>Policy Contracts Monitor (All Primes &gt;$50M)</h3>
+  </div>
+  <div class="meta">Spec: .skills/stock-analyst/references/policy-contracts-monitor-spec.md</div>
+  <p>Broader than Barrel 4. This scan flags <i>every</i> &gt;$50M federal contract award to a publicly-traded prime contractor — not just DPA §303 reshoring. Defense, infrastructure, energy, anything where Uncle Sam writes a check above the threshold. The reasoning: contract awards are the "follow the money" signal, and filtering to a single thesis (Barrel 4) leaves money on the table.</p>
+  <div class="optin">
+    Want every &gt;$50M prime award in your briefing? &rarr; <a href="https://github.com/fructifyme/ai-pivot-explainer/issues/new?template=opt-in-scan.yml&title=Opt-in:+Policy+Contracts+All-Primes&labels=opt-in,jim&body=Add+the+all-primes+%3E%2450M+policy-contracts+scan+to+my+briefing.">Opt in via GitHub Issue</a>
+  </div>
+</div>
+
+<h2 id="feedback">4. How to send Mike ideas / pushback</h2>
+
+<p class="sub">Three pre-built feedback channels, each opens a structured GitHub Issue with the right template. Mike sees every issue in his repo inbox and triages them into the daily process. You'll need a free github.com account — anonymous filing isn't supported.</p>
+
+<div class="feedback">
+  <a href="https://github.com/fructifyme/ai-pivot-explainer/issues/new?template=ticker-idea.yml">
+    <div class="label">Channel 01</div>
+    <div class="title">Ticker idea</div>
+    <div class="desc">"I think Mike should look at &lt;ticker&gt; because…" — name, thesis in one paragraph, what catalyst or filing pulled your attention.</div>
+  </a>
+  <a href="https://github.com/fructifyme/ai-pivot-explainer/issues/new?template=scan-suggestion.yml">
+    <div class="label">Channel 02</div>
+    <div class="title">Scan suggestion</div>
+    <div class="desc">A new "barrel" you think we should run. The repeatable pattern, the data source, the kind of signal it would surface.</div>
+  </a>
+  <a href="https://github.com/fructifyme/ai-pivot-explainer/issues/new?template=question.yml">
+    <div class="label">Channel 03</div>
+    <div class="title">Question for Mike</div>
+    <div class="desc">"Why are you doing X instead of Y?" — clarifying questions, methodological pushback, anything that doesn't fit the other two buckets.</div>
+  </a>
+</div>
+
+<h2 id="how">5. How this page works under the hood</h2>
+
+<p>This isn't a static page someone manually edits. The flow:</p>
+
+<ol class="clean">
+  <li>Overnight, an automated job runs each barrel's scan (EDGAR full-text 8-K search, NASDAQ pre-mkt API, federal contract feeds, the SOBR-anchored copycat window).</li>
+  <li>A Python script (<code>scripts/refresh_jim_briefing.py</code>) takes the morning's outputs, the active briefing markdown, and the current portfolio CSV, and regenerates this HTML using a Jinja-style template.</li>
+  <li>The script commits the new <code>jim/index.html</code> to this repo and pushes. GitHub Pages rebuilds in ~30 seconds.</li>
+  <li>A short email goes to Jim with the headline + a link to this page. Email arrives between 7:30–8:00 AM ET on trading days.</li>
+  <li>If Jim files a GitHub Issue (ticker, scan, or question), it lands in Mike's inbox and gets triaged into the next morning's briefing process.</li>
+</ol>
+
+<p>The architecture is intentional. Briefings live as markdown in a private workspace; only the cleaned, public-safe narrative gets published here. No portfolio dollar amounts beyond what's in the document above, no account numbers, no PII.</p>
+
+<div class="footer">
+  <div><b>Compiled:</b> {{EDITION_DATE}} — based on internal daily zombie-shell briefing dated {{SCAN_DATE}}. Sources: SEC EDGAR full-text 8-K search, NASDAQ live quotes API, public news coverage of Phoenix Asia Holdings (PHOE), SOBR Safe / Clean World Ventures, Scilex (SCLX) / ACEA Pharma, GD Culture Group, Robo.ai, and the broader 2026 zombie-shell cohort.</div>
+  <div class="disclaimer"><b>Not investment advice.</b> Pivot trades and small-cap policy plays carry extreme risk, including total loss of capital. Several historical examples cited in the parent <a href="../">AI-Pivot Explainer</a> ended in SEC fraud enforcement. Position size as if you may lose 100% of any speculative trade. Nothing here is a recommendation to buy or sell any security. Jim is a recipient, not a client — Mike is not acting as an investment advisor.</div>
+</div>
+
+</div>
+</body>
+</html>
