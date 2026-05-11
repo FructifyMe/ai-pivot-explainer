@@ -3,101 +3,131 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only">
 <title>Jim's Daily Brief — {{EDITION_DATE}}</title>
+<style>
+  /* Gmail/Apple Mail honour these; Outlook ignores most. Inline styles below carry the look. */
+  body { margin:0; padding:0; background:#f6f8fb; }
+  .pill { display:inline-block; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:11px; padding:2px 10px; border-radius:99px; letter-spacing:0.05em; font-weight:600 }
+  .pill.tradable { background:#dcfce7; color:#15803d; border:1px solid #bbf7d0 }
+  .pill.restricted { background:#fef3c7; color:#b45309; border:1px solid #fde68a }
+  a { color:#2563eb; text-decoration:underline }
+  a:hover { color:#1d4ed8 }
+  table.scan-table { width:100%; border-collapse:collapse; font-size:14px; margin-top:12px; background:white; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden }
+  table.scan-table th { background:#f8fafc; text-align:left; padding:10px 12px; border-bottom:1px solid #e2e8f0; color:#475569; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; letter-spacing:0.05em; text-transform:uppercase; font-weight:600 }
+  table.scan-table td { text-align:left; padding:10px 12px; border-bottom:1px solid #f1f5f9; vertical-align:top; color:#334155 }
+  table.scan-table tr:last-child td { border-bottom:none }
+  h3 { color:#0f172a; font-size:16px; margin:20px 0 8px; letter-spacing:-0.01em }
+  ul.clean, ol.clean { padding-left:22px; margin:10px 0; color:#334155 }
+  ul.clean li, ol.clean li { margin:6px 0 }
+  code { background:#f1f5f9; padding:1px 5px; border-radius:3px; font-size:13px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; color:#0f172a }
+</style>
 </head>
-<body style="margin:0;padding:0;background:#0e1014;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#e8ecf2;line-height:1.55;-webkit-font-smoothing:antialiased">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0e1014;padding:24px 0">
+<body style="margin:0;padding:0;background:#f6f8fb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#334155;line-height:1.6;-webkit-font-smoothing:antialiased">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f6f8fb;padding:32px 0">
   <tr>
     <td align="center">
-      <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;background:#0e1014;padding:0 22px">
+      <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;background:white;border-radius:14px;box-shadow:0 1px 3px rgba(15,23,42,0.04),0 8px 30px rgba(15,23,42,0.06);overflow:hidden">
 
-        <!-- Header -->
+        <!-- HEADER: gradient strip -->
         <tr>
-          <td style="padding-bottom:22px;border-bottom:1px solid #2a3140">
-            <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;letter-spacing:0.2em;color:#4ade80;text-transform:uppercase;margin-bottom:10px">Jim's Daily Brief</div>
-            <h1 style="font-size:26px;line-height:1.2;margin:0 0 8px;color:#e8ecf2;letter-spacing:-0.01em">{{EDITION_DATE}} — {{HEADLINE_ONE_LINER}}</h1>
-            <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:#8a93a4;margin-top:6px">Latest scan referenced: {{SCAN_DATE}} &nbsp;·&nbsp; Live archive: <a href="https://fructifyme.github.io/ai-pivot-explainer/jim/" style="color:#60a5fa">fructifyme.github.io/ai-pivot-explainer/jim/</a></div>
+          <td style="background:linear-gradient(135deg,#6366f1 0%,#2563eb 55%,#0ea5e9 100%);padding:26px 32px">
+            <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;letter-spacing:0.22em;color:rgba(255,255,255,0.85);text-transform:uppercase;margin-bottom:8px">Jim's Daily Brief</div>
+            <div style="font-size:24px;line-height:1.25;color:white;font-weight:700;letter-spacing:-0.01em">{{EDITION_DATE}} · {{HEADLINE_ONE_LINER}}</div>
+            <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:rgba(255,255,255,0.78);margin-top:10px">Latest scan referenced: {{SCAN_DATE}} &nbsp;·&nbsp; <a href="https://fructifyme.github.io/ai-pivot-explainer/jim/" style="color:rgba(255,255,255,0.95);text-decoration:underline">Open the archive page</a></div>
           </td>
         </tr>
 
-        <!-- Today's headline call -->
+        <!-- 1. TODAY'S HEADLINE CALL -->
         <tr>
-          <td style="padding:28px 0 0">
-            <h2 style="font-size:18px;margin:0 0 12px;color:#e8ecf2;letter-spacing:-0.01em">1. Today's headline call</h2>
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#1c2330;border:1px solid #2a3140;border-left:3px solid #60a5fa;border-radius:8px">
-              <tr><td style="padding:16px 20px">
-                <div style="font-size:15px;color:#60a5fa;font-weight:600;margin-bottom:8px">Read this first</div>
-                {{HEADLINE_HTML}}
-              </td></tr>
-            </table>
+          <td style="padding:32px 32px 0">
+            <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;letter-spacing:0.15em;color:#2563eb;text-transform:uppercase;margin-bottom:8px;font-weight:700">1 · Today's headline call</div>
+            <h2 style="font-size:22px;margin:0 0 14px;color:#0f172a;letter-spacing:-0.015em;font-weight:700">Read this first</h2>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:linear-gradient(135deg,#eff6ff 0%,#f0f9ff 100%);border:1px solid #bfdbfe;border-left:4px solid #2563eb;border-radius:10px"><tr><td style="padding:18px 22px;color:#1e293b;font-size:15px">
+              {{HEADLINE_HTML}}
+            </td></tr></table>
           </td>
         </tr>
 
-        <!-- Zombie Shell scan body -->
+        <!-- 2. ZOMBIE SHELL SCAN — THE MAIN COURSE -->
         <tr>
-          <td style="padding:32px 0 0">
-            <h2 style="font-size:18px;margin:0 0 8px;color:#e8ecf2;border-top:1px solid #2a3140;padding-top:24px;letter-spacing:-0.01em">2. The Zombie Shell scan</h2>
-            <p style="color:#8a93a4;font-size:14px;margin:0 0 18px">This scan runs every morning before market open — sub-$250M companies filing SEC 8-Ks that announce a pivot (AI, crypto, batteries, defense, pharma). Each candidate gets tagged <b style="color:#4ade80">TRADABLE</b> or <b style="color:#f59e0b">RESTRICTED</b> based on Schwab IRA rules.</p>
-            <div style="font-size:14.5px;line-height:1.6">
+          <td style="padding:36px 32px 0">
+            <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;letter-spacing:0.15em;color:#2563eb;text-transform:uppercase;margin-bottom:8px;font-weight:700">2 · Zombie Shell scan</div>
+            <h2 style="font-size:22px;margin:0 0 8px;color:#0f172a;letter-spacing:-0.015em;font-weight:700">What the scanners caught</h2>
+            <p style="color:#64748b;font-size:14px;margin:0 0 4px">Sub-$250M issuers filing SEC 8-Ks announcing a pivot — AI, batteries, crypto, defense, pharma. Tagged <span style="display:inline-block;background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;padding:1px 8px;border-radius:99px;letter-spacing:0.05em;font-weight:600">TRADABLE</span> or <span style="display:inline-block;background:#fef3c7;color:#b45309;border:1px solid #fde68a;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;padding:1px 8px;border-radius:99px;letter-spacing:0.05em;font-weight:600">RESTRICTED</span> against the Schwab IRA's sub-$5 / OTC blocks.</p>
+            <div style="color:#334155;font-size:14.5px;line-height:1.65;margin-top:18px">
               {{SCAN_BODY_HTML}}
             </div>
           </td>
         </tr>
 
-        <!-- Other barrels (static — same text as page) -->
+        <!-- 3. REPLY / FEEDBACK -->
         <tr>
-          <td style="padding:32px 0 0">
-            <h2 style="font-size:18px;margin:0 0 12px;color:#e8ecf2;border-top:1px solid #2a3140;padding-top:24px;letter-spacing:-0.01em">3. Other barrels running</h2>
-            <p style="color:#8a93a4;font-size:14px;margin:0 0 18px">Zombie Shell is one of several scans. Reply <i>"add &lt;barrel name&gt;"</i> and the next morning's email will include that scan too.</p>
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#151922;border:1px solid #2a3140;border-radius:8px;margin-bottom:12px"><tr><td style="padding:16px 20px">
-              <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:#4ade80;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px">Live — trades filled</div>
-              <div style="font-size:16px;font-weight:600;color:#e8ecf2;margin-bottom:6px">Barrel 4 — DPA §303 / Reshoring</div>
-              <div style="font-size:13.5px;color:#e8ecf2">Public-company prime contractors on Defense Production Act §303 awards &gt;$50M for reshoring strategic materials. <b>Current positions (5/11 mid-day, post-add):</b> MTZ 3 sh, ETN 2 sh, MP 33 sh, REMX 11 sh (6 sh added today) — all four legs filled and topped up. Aggregate +$157 unrealized.</div>
-            </td></tr></table>
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#151922;border:1px solid #2a3140;border-radius:8px;margin-bottom:12px"><tr><td style="padding:16px 20px">
-              <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:#4ade80;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px">Live — positions held &nbsp;·&nbsp; weekly + monthly audit</div>
-              <div style="font-size:16px;font-weight:600;color:#e8ecf2;margin-bottom:6px">London Bridge Strategy</div>
-              <div style="font-size:13.5px;color:#e8ecf2">Four-leg macro trade: <b>IBIT 70 sh + FCX 30 sh + CME 18 sh</b> on Schwab + <b>~$2,168 BTC</b> on Robinhood. Thesis: London→COMEX gold repricing, weaker dollar, BTC reserve. <b>Weekly check-in</b> Mondays pre-market scores 4 hard-breakers + 5 thesis signals and outputs HOLD / ADD / TRIM / EXIT. <b>Monthly audit</b> on the 1st rechecks the macro thesis components. Latest: GREEN, thesis intact, book at +$2.62 unrealized.</div>
-            </td></tr></table>
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#151922;border:1px solid #2a3140;border-radius:8px;margin-bottom:12px"><tr><td style="padding:16px 20px">
-              <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:#4ade80;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px">Live — basket held</div>
-              <div style="font-size:16px;font-weight:600;color:#e8ecf2;margin-bottom:6px">Psychedelics Basket</div>
-              <div style="font-size:13.5px;color:#e8ecf2">Sized on Trump EO catalyst 4/20: <b>ATAI 1000 + CMPS 500 + PSIL 65</b> (~$10,966). Held as a thematic option, not high-conviction.</div>
-            </td></tr></table>
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#151922;border:1px solid #2a3140;border-radius:8px;margin-bottom:12px"><tr><td style="padding:16px 20px">
-              <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:#60a5fa;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px">Meta — weekly discipline</div>
-              <div style="font-size:16px;font-weight:600;color:#e8ecf2;margin-bottom:6px">Decision Postmortem</div>
-              <div style="font-size:13.5px;color:#e8ecf2">Every trade gets a decision file written <i>before</i> the order. Saturday morning a scheduled task reads them all, computes $-weighted alpha vs SPY, and surfaces top/worst alpha, kill triggers near firing, and earnings gates in 21 days. Latest (5/10): 14 decisions, +$95 aggregate, RKLB +33.5% alpha (single best). The forcing function that keeps theses fresh.</div>
-            </td></tr></table>
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#151922;border:1px solid #2a3140;border-radius:8px;margin-bottom:12px"><tr><td style="padding:16px 20px">
-              <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:#60a5fa;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px">Armed — daily event watch</div>
-              <div style="font-size:16px;font-weight:600;color:#e8ecf2;margin-bottom:6px">Earnings Calendar Watch</div>
-              <div style="font-size:13.5px;color:#e8ecf2">21-day forward earnings calendar for every portfolio name. Discipline scan: don't get caught in an earnings print on a thesis trade.</div>
-            </td></tr></table>
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#151922;border:1px solid #2a3140;border-radius:8px"><tr><td style="padding:16px 20px">
-              <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:#60a5fa;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px">Armed — event triggered</div>
-              <div style="font-size:16px;font-weight:600;color:#e8ecf2;margin-bottom:6px">Policy Contracts Monitor (All Primes &gt;$50M)</div>
-              <div style="font-size:13.5px;color:#e8ecf2">Every &gt;$50M federal contract award to a publicly-traded prime — defense, energy, infrastructure. "Follow the money" beyond the Barrel 4 thesis.</div>
+          <td style="padding:36px 32px 0">
+            <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;letter-spacing:0.15em;color:#2563eb;text-transform:uppercase;margin-bottom:8px;font-weight:700">3 · Reply with whatever you've got</div>
+            <h2 style="font-size:22px;margin:0 0 14px;color:#0f172a;letter-spacing:-0.015em;font-weight:700">No accounts, no portals — just hit Reply</h2>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px"><tr><td style="padding:18px 22px;color:#1e293b;font-size:14.5px">
+              <b style="color:#0f172a">Ticker idea?</b> Drop the symbol and a paragraph on why. The filing, the catalyst, the pattern you noticed.<br>
+              <b style="color:#0f172a">New scan to run?</b> Describe the repeatable pattern — inputs, conditions, historical names that fit.<br>
+              <b style="color:#0f172a">Question?</b> Methodology, sizing, "why didn't you take X" — anything goes.
+              <div style="margin-top:14px;font-size:13px;color:#64748b;font-style:italic">Power-user option: structured templates on <a href="https://github.com/fructifyme/ai-pivot-explainer/issues" style="color:#2563eb">GitHub</a> (free account required). Email is always fine.</div>
             </td></tr></table>
           </td>
         </tr>
 
-        <!-- Feedback -->
+        <!-- 4. OTHER BARRELS — moved to the bottom as supplemental context -->
         <tr>
-          <td style="padding:32px 0 0">
-            <h2 style="font-size:18px;margin:0 0 8px;color:#e8ecf2;border-top:1px solid #2a3140;padding-top:24px;letter-spacing:-0.01em">4. Reply with whatever you've got</h2>
-            <p style="color:#e8ecf2;font-size:14.5px;margin:0 0 12px">No accounts, no forms. Just hit Reply. <b>Ticker idea</b> — symbol + a paragraph on why. <b>New scan to run</b> — describe the repeatable pattern. <b>Question</b> — methodology, sizing, anything.</p>
-            <p style="color:#8a93a4;font-size:13px;margin:10px 0 0;font-style:italic">Power-user option: structured templates on GitHub at <a href="https://github.com/fructifyme/ai-pivot-explainer/issues" style="color:#60a5fa">github.com/fructifyme/ai-pivot-explainer/issues</a> — requires a free account. Email is always fine.</p>
+          <td style="padding:36px 32px 0">
+            <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;letter-spacing:0.15em;color:#64748b;text-transform:uppercase;margin-bottom:8px;font-weight:700">4 · Other barrels running</div>
+            <h2 style="font-size:22px;margin:0 0 8px;color:#0f172a;letter-spacing:-0.015em;font-weight:700">What else the scanners are doing</h2>
+            <p style="color:#64748b;font-size:14px;margin:0 0 18px">Reply <i>"add &lt;barrel name&gt;"</i> and tomorrow's email will include that scan too.</p>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:white;border:1px solid #e2e8f0;border-left:3px solid #16a34a;border-radius:10px;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,0.03)"><tr><td style="padding:16px 20px">
+              <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;color:#16a34a;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px;font-weight:700">Live · event-triggered</div>
+              <div style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:6px">Barrel 4 — DPA §303 / Reshoring</div>
+              <div style="font-size:13.5px;color:#334155">Public-company prime contractors on Defense Production Act §303 awards &gt;$50M for reshoring strategic materials. <b>Current positions (5/11 mid-day, post-add):</b> MTZ 3 sh, ETN 2 sh, MP 33 sh, REMX 11 sh (6 sh added today) — all four legs filled and topped up. Aggregate +$157 unrealized.</div>
+            </td></tr></table>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:white;border:1px solid #e2e8f0;border-left:3px solid #16a34a;border-radius:10px;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,0.03)"><tr><td style="padding:16px 20px">
+              <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;color:#16a34a;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px;font-weight:700">Live · weekly + monthly audit</div>
+              <div style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:6px">London Bridge Strategy</div>
+              <div style="font-size:13.5px;color:#334155">Four-leg macro trade: <b>IBIT 70 sh + FCX 30 sh + CME 18 sh</b> on Schwab + <b>~$2,168 BTC</b> on Robinhood. Thesis: London→COMEX gold repricing, weaker dollar, BTC reserve. <b>Weekly check-in</b> Mondays pre-mkt scores 4 hard-breakers + 5 thesis signals; <b>monthly audit</b> on the 1st rechecks macro components. Latest: GREEN, thesis intact.</div>
+            </td></tr></table>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:white;border:1px solid #e2e8f0;border-left:3px solid #16a34a;border-radius:10px;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,0.03)"><tr><td style="padding:16px 20px">
+              <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;color:#16a34a;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px;font-weight:700">Live · policy basket</div>
+              <div style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:6px">Psychedelics Basket</div>
+              <div style="font-size:13.5px;color:#334155">Sized on Trump EO catalyst 4/20/26: <b>ATAI 1000 + CMPS 500 + PSIL 65</b> (~$10,966). Held as a thematic option, not high-conviction. Watching FDA path-to-approval news.</div>
+            </td></tr></table>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:white;border:1px solid #e2e8f0;border-left:3px solid #2563eb;border-radius:10px;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,0.03)"><tr><td style="padding:16px 20px">
+              <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;color:#2563eb;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px;font-weight:700">Meta · weekly discipline</div>
+              <div style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:6px">Decision Postmortem</div>
+              <div style="font-size:13.5px;color:#334155">Every trade gets a decision file written <i>before</i> the order. Saturday morning a scheduled task reads them all, computes $-weighted alpha vs SPY, surfaces top/worst alpha, kill triggers near firing, and earnings gates in 21 days. Latest (5/10): 14 decisions, +$95 aggregate, RKLB +33.5% alpha (single best).</div>
+            </td></tr></table>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:white;border:1px solid #e2e8f0;border-left:3px solid #2563eb;border-radius:10px;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,0.03)"><tr><td style="padding:16px 20px">
+              <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;color:#2563eb;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px;font-weight:700">Armed · daily event watch</div>
+              <div style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:6px">Earnings Calendar Watch</div>
+              <div style="font-size:13.5px;color:#334155">21-day forward earnings calendar for every portfolio name. Discipline scan: don't get caught in an earnings print on a thesis trade.</div>
+            </td></tr></table>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:white;border:1px solid #e2e8f0;border-left:3px solid #2563eb;border-radius:10px;box-shadow:0 1px 2px rgba(15,23,42,0.03)"><tr><td style="padding:16px 20px">
+              <div style="font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;color:#2563eb;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:4px;font-weight:700">Armed · event triggered</div>
+              <div style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:6px">Policy Contracts Monitor (All Primes &gt;$50M)</div>
+              <div style="font-size:13.5px;color:#334155">Every &gt;$50M federal contract award to a publicly-traded prime — defense, energy, infrastructure. "Follow the money" beyond the Barrel 4 thesis.</div>
+            </td></tr></table>
           </td>
         </tr>
 
-        <!-- Footer -->
+        <!-- FOOTER -->
         <tr>
-          <td style="padding:36px 0 0">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #2a3140"><tr><td style="padding-top:18px">
-              <div style="font-size:12px;color:#8a93a4;line-height:1.5">Compiled {{EDITION_DATE}} from internal zombie-shell briefing dated {{SCAN_DATE}}. Sources: SEC EDGAR full-text 8-K search, NASDAQ live quotes API, public news coverage.</div>
-              <div style="font-size:12px;color:#f1c9b8;background:#221a18;border:1px solid #4a2a22;border-radius:6px;padding:12px 14px;margin-top:14px"><b>Not investment advice.</b> Pivot trades and small-cap policy plays carry extreme risk including total loss of capital. Several historical examples ended in SEC fraud enforcement. Position size as if you may lose 100% of any speculative trade. Nothing here is a recommendation to buy or sell any security. Jim is a recipient, not a client.</div>
-            </td></tr></table>
+          <td style="padding:36px 32px 32px">
+            <div style="border-top:1px solid #e2e8f0;padding-top:20px">
+              <div style="font-size:12px;color:#64748b;line-height:1.55">Compiled {{EDITION_DATE}} from internal zombie-shell briefing dated {{SCAN_DATE}}. Sources: SEC EDGAR full-text 8-K search, NASDAQ live quotes API, public news coverage.</div>
+              <div style="font-size:12px;color:#7c2d12;background:linear-gradient(135deg,#fef2f2 0%,#fff7ed 100%);border:1px solid #fed7aa;border-radius:8px;padding:14px 16px;margin-top:14px"><b>Not investment advice.</b> Pivot trades and small-cap policy plays carry extreme risk including total loss of capital. Several historical examples ended in SEC fraud enforcement. Position size as if you may lose 100% of any speculative trade. Nothing here is a recommendation to buy or sell any security. Jim is a recipient, not a client.</div>
+            </div>
           </td>
         </tr>
 

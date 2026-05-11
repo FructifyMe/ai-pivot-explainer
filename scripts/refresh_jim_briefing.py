@@ -239,7 +239,16 @@ def main() -> None:
     print(f'Wrote {page_path}')
 
     email_path = args.repo_dir / 'jim' / 'email.html'
-    email_path.write_text(render(email_template, **common), encoding='utf-8')
+    email_html = render(email_template, **common)
+    # Inline-style the pills so Outlook etc. render them correctly (they ignore <style>)
+    email_html = email_html.replace(
+        '<span class="pill tradable">TRADABLE</span>',
+        '<span style="display:inline-block;background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;padding:1px 8px;border-radius:99px;letter-spacing:0.05em;font-weight:600">TRADABLE</span>'
+    ).replace(
+        '<span class="pill restricted">RESTRICTED</span>',
+        '<span style="display:inline-block;background:#fef3c7;color:#b45309;border:1px solid #fde68a;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;padding:1px 8px;border-radius:99px;letter-spacing:0.05em;font-weight:600">RESTRICTED</span>'
+    )
+    email_path.write_text(email_html, encoding='utf-8')
     print(f'Wrote {email_path} (paste into Gmail compose, or load with --send via SMTP — not yet implemented)')
 
     if args.commit or args.push:
