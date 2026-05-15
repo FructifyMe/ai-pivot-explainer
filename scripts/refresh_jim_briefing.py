@@ -129,14 +129,54 @@ CHAT_FIRST_RE = re.compile(
     r'## CHAT-FIRST SUMMARY.*?\n(.*?)(?=\n---|\n## )', re.DOTALL
 )
 
+# Match the briefing section headers regardless of capitalization or trailing qualifier.
+# (e.g. "## 🔴 Hot Candidates — Actionable Today" matches the "Hot Candidates" key.)
 SECTIONS_OF_INTEREST = [
-    '## 🔴 HOT CANDIDATES',
-    '## 🟡 PRE-ANNOUNCEMENT WATCH',
-    '## 🧨 COPYCAT WINDOW ALERT',
-    '## 📊 PRE-MARKET GAINERS',
-    '## 🟢 SECTOR TREND UPDATE',
-    '## ⚠️ MISSES',
+    ('🔴', 'Hot Candidates'),
+    ('🟡', 'Pre-Announcement Watch'),
+    ('🧨', 'Copycat Window'),
+    ('🌍', 'Foreign-ADS Pivot Watch'),
+    ('📊', 'Pre-Market Gainers'),
+    ('🟢', 'Sector Trend Update'),
+    ('⚠️', 'Misses'),
 ]
+
+# Terms that, if present, mark a paragraph as Mike-specific and should be stripped
+# from anything sent to Jim. Per feedback_jim_brief_public_only.md (5/12) +
+# feedback_jim_email_template_leak.md and the 5/15 revision.
+PORTFOLIO_LEAK_TERMS = [
+    "mike's", "mike ", "mike,", "mike.", "mike's gig",
+    'portfolio', 'cost basis', 'unrealized', 'p/l', 'cash',
+    'inh ira', 'inherited ira', 'schwab ira', 'robinhood',
+    "mike's book", 'carry-over', 'his $', 'his position',
+    'sized appropriately', 'csv', 'positions snapshot',
+    'sh @', 'shares @ avg', 'avg cost', 'his cost',
+    'london bridge', 'psychedelics basket', 'barrel 4',
+    'ionq 40', 'gig 75', 'mtz 3', 'etn 2', 'mp 33', 'remx 11',
+    'open orders', 'buy limit', 'stop placed', 'trim half',
+    'trailing stop', 'fill', 'order status',
+]
+
+
+def _strip_portfolio_leaks(md: str) -> str:
+    """Drop any paragraph or bullet that mentions Mike-specific positions, P/L, or cash."""
+    out_lines: list[str] = []
+    paragraph: list[str] = []
+    def flush():
+        if not paragraph:
+            return
+        joined = ' '.join(paragraph).lower()
+        if not any(term in joined for term in PORTFOLIO_LEAK_TERMS):
+            out_lines.extend(paragraph)
+        paragraph.clear()
+    for line in md.splitlines():
+        if not line.strip():
+            flush()
+            out_lines.append(line)
+            continue
+        paragraph.append(line)
+    flush()
+    return '\n'.join(out_lines)
 
 
 def extract_headline_oneliner(briefing_md: str) -> str:
@@ -157,26 +197,53 @@ def extract_headline_oneliner(briefing_md: str) -> str:
     return txt.strip() or 'Today\'s scan'
 
 
+JIM_SUMMARY_RE = re.compile(
+    r'## JIM SUMMARY.*?\n(.*?)(?=\n---|\n## )', re.DOTALL
+)
+
+
 def extract_headline(briefing_md: str) -> str:
+    # Prefer an explicit JIM SUMMARY block authored zombie-only.
+    m = JIM_SUMMARY_RE.search(briefing_md)
+    if m:
+        return md_to_html(m.group(1).strip())
+    # Fallback: CHAT-FIRST SUMMARY with portfolio leaks stripped.
     m = CHAT_FIRST_RE.search(briefing_md)
     if not m:
-        return '<p>No CHAT-FIRST SUMMARY found in latest briefing.</p>'
-    return md_to_html(m.group(1).strip())
+        return '<p>No JIM SUMMARY or CHAT-FIRST SUMMARY found in latest briefing.</p>'
+    return md_to_html(_strip_portfolio_leaks(m.group(1).strip()))
+
+
+def _section_pattern(emoji: str, key: str) -> re.Pattern:
+    # Strip optional Unicode variation selector (U+FE0F) so the regex matches whether or not
+    # the markdown source uses the emoji-presentation form. The first emoji char is the base.
+    base = emoji[0]
+    # NOTE: \uFE0F (variation selector) needs a real-string escape, not a raw-string one.
+    # In a raw string r'\uFE0F' is six literal chars, not U+FE0F.
+    return re.compile(
+        r'^##\s+' + re.escape(base) + '\uFE0F?' + r'\s+' + re.escape(key) + r'[^\n]*\n(.*?)(?=\n## |\Z)',
+        re.DOTALL | re.MULTILINE | re.IGNORECASE,
+    )
+
+
+def _is_substantive(text: str) -> bool:
+    # After leak-stripping we need to filter out sections that became essentially empty
+    # (only horizontal rules, blank lines, or a single short line).
+    stripped = re.sub(r'^[-=\s]+$', '', text, flags=re.MULTILINE).strip()
+    return len(stripped) >= 80
 
 
 def extract_scan_body(briefing_md: str) -> str:
     out_parts: list[str] = []
-    for section in SECTIONS_OF_INTEREST:
-        pattern = re.compile(
-            re.escape(section) + r'.*?\n(.*?)(?=\n## |\Z)', re.DOTALL
-        )
-        m = pattern.search(briefing_md)
+    for emoji, key in SECTIONS_OF_INTEREST:
+        m = _section_pattern(emoji, key).search(briefing_md)
         if not m:
             continue
-        # Strip the emoji / heading and turn into an h3 sub-section
-        nice_heading = re.sub(r'^## [^\w]+', '', section).strip()
-        out_parts.append(f'<h3>{nice_heading}</h3>')
-        out_parts.append(md_to_html(m.group(1).strip()))
+        body = _strip_portfolio_leaks(m.group(1).strip())
+        if not _is_substantive(body):
+            continue
+        out_parts.append(f'<h3>{key}</h3>')
+        out_parts.append(md_to_html(body))
     return '\n\n'.join(out_parts) if out_parts else '<p>No scan sections extracted.</p>'
 
 
